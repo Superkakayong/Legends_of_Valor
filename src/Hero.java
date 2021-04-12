@@ -49,6 +49,7 @@ public class Hero extends Role implements Fight{
         equippedArmor = null;
     }
 
+
     public double getMoney() {
         return money;
     }
