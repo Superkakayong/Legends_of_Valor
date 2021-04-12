@@ -1,4 +1,4 @@
-<h1 align = "center">Legends_of_Valor - Dayong Wu</h1>
+<h1 align = "center">Legends_of_Valor </h1>
 
 ---
 
