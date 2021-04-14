@@ -6,12 +6,21 @@ public class Cell {
     private String rightMarker;
     private String cellType;
 
+    private StringBuilder topAndBottom;
+    private StringBuilder middle;
+
     public Cell() {}
 
     public Cell(String leftMarker, String rightMarker, String cellType) {
         this.leftMarker = leftMarker;
         this.rightMarker = rightMarker;
         this.cellType = cellType;
+
+        this.topAndBottom = new StringBuilder();
+        this.middle = new StringBuilder();
+
+        this.setTopAndBottom();
+        this.setMiddle();
     }
 
     public String getLeftMarker() {
@@ -26,10 +35,20 @@ public class Cell {
         return cellType;
     }
 
-    public String formCell() {
-        String topAndBottom = cellType + " " + "-" + " " + cellType + " " + "-" + " " + cellType + "   ";
-        String middle = "| " + leftMarker + " " + rightMarker + " |" + "   " + "\n";
+    public StringBuilder getTopAndBottom() {
+        return topAndBottom;
+    }
 
-        return topAndBottom + "\n" + middle + topAndBottom;
+    public StringBuilder getMiddle() {
+        return middle;
+    }
+
+    private void setTopAndBottom() {
+        topAndBottom.append(cellType).append(" ").append("-").append(" ").append(cellType).append(" ").
+                append("-").append(" ").append(cellType);
+    }
+
+    private void setMiddle() {
+        middle.append("| ").append(leftMarker).append("•").append(rightMarker).append(" |");
     }
 }

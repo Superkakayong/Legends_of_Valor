@@ -20,6 +20,7 @@ public class Map {
 
     private void mapInitialization() {
         Random seed = new Random();
+        int heroIndex = 1, monsterIndex = 1;
 
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
@@ -28,28 +29,58 @@ public class Map {
                 // i.e. Inaccessible Cells should appear in column 2, 5, 8, etc
                 if (3 * j + 2 < size) { map[i][3 * j + 2] = new InaccessibleCell(); }
 
-                String heroMarker = "H" + (j + 1);
-                String monsterMarker = "M" + (j + 1);
+                String heroMarker = "H" + heroIndex;
+                String monsterMarker = "M" + monsterIndex;
 
                 // Create monsters' nexus
                 if (i == 0 && map[i][j] == null) {
-                    map[i][j] = new NexusCell(monsterMarker);
-                    continue;
+                    if (j % 3 == 0) {
+                        map[i][j] = new NexusCell("  ", monsterMarker);
+                        ++monsterIndex;
+                    }
+                    else { map[i][j] = new NexusCell("  ", "  "); }
                 }
 
                 // Create heroes' nexus
                 if (i == size - 1 && map[i][j] == null) {
-                    map[i][j] = new NexusCell(heroMarker);
-                    continue;
+                    if (j % 3 == 0) {
+                        map[i][j] = new NexusCell(heroMarker, "  ");
+                        ++heroIndex;
+                    }
+                    else { map[i][j] = new NexusCell("  ", "  "); }
                 }
 
                 int temp = seed.nextInt(10) + 1;
 
-                if (1 <= temp && temp <= 4) { map[i][j] = new PlainCell(" ", " "); }
-                else if (5 <= temp && temp <= 6) { map[i][j] = new BushCell(" ", " "); }
-                else if (7 <= temp && temp <= 8) { map[i][j] = new CaveCell(" ", " "); }
-                else if (9 <= temp && temp <= 10) { map[i][j] = new KoulouCell(" ", " "); }
+                if (map[i][j] == null) {
+                    if (1 <= temp && temp <= 4) { map[i][j] = new PlainCell("  ", "  "); }
+                    else if (5 <= temp && temp <= 6) { map[i][j] = new BushCell("  ", "  "); }
+                    else if (7 <= temp && temp <= 8) { map[i][j] = new CaveCell("  ", "  "); }
+                    else if (9 <= temp && temp <= 10) { map[i][j] = new KoulouCell("  ", "  "); }
+                }
             }
         }
+    }
+
+    public void printMap() {
+        System.out.println(Colors.PURPLE_BG + Colors.BLACK +" World Map: " + Colors.RESET);
+
+        for (Cell[] row : map) {
+            for (int i = 1; i <= 3; ++i) {
+                for (Cell cell : row) {
+                    if (i != 2) { System.out.print(cell.getTopAndBottom() + "   "); }
+                    else { System.out.print(cell.getMiddle() + "   "); }
+                }
+
+                System.out.println();
+            }
+
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        Map m = new Map(8);
+        m.printMap();
     }
 }
