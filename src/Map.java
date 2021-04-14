@@ -66,8 +66,13 @@ public class Map {
         System.out.println(Colors.PURPLE_BG + Colors.BLACK +" World Map: " + Colors.RESET);
 
         for (Cell[] row : map) {
+            // For every row in the map
             for (int i = 1; i <= 3; ++i) {
+                // For every line in the cell (a cell has three lines: top, middle, bottom)
                 for (Cell cell : row) {
+                    // For every cell in the row
+
+                    // If this is the top line or the bottom line of the cell
                     if (i != 2) { System.out.print(cell.getTopAndBottom() + "   "); }
                     else { System.out.print(cell.getMiddle() + "   "); }
                 }
