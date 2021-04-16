@@ -623,4 +623,38 @@ public final class NotificationCenter {
                 break;
         }
     }
+
+    public static void teleport(int index) {
+        switch (index) {
+            case 1:
+                System.out.println(Colors.BLUE_BG + Colors.BLACK + " Which cell do you want to teleport? " + Colors.RESET);
+                break;
+            case 2:
+                System.out.println("Cannot go outside of the map!");
+                break;
+            case 3:
+                System.out.println("Invalid input! Must be an Integer!");
+                break;
+            case 4:
+                System.out.println("Cannot teleport to an INACCESSIBLE CELL!");
+                System.out.println();
+                break;
+            case 5:
+                System.out.println("Cannot teleport to a cell of the SAME LANE!");
+                System.out.println();
+                break;
+            case 6:
+                System.out.println("Cannot teleport this cell since it has not been EXPLORED yet!");
+                System.out.println();
+                break;
+            case 7:
+                System.out.println("Please enter the index of the row that you want to teleport: ");
+                break;
+            case 8:
+                System.out.println("Please enter the index of the column that you want to teleport: ");
+                break;
+            case 9:
+                System.out.println(Colors.BLUE_BG + Colors.BLACK + " Teleport Successfully! " + Colors.RESET);
+        }
+    }
 }

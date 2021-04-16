@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * This is the main class of the project!
@@ -11,6 +14,7 @@ public class LegendsGame extends RPGGame{
     private ArrayList<Monster> monsters; // The monster squad
     private ArrayList<Hero> faintedHeroes; // All fainted heroes
     private ArrayList<Hero> resetHeroes; // For resetting the heroes after a fight
+
     private Map map; // The game map
     private Market market; // The market in the market cell
 
@@ -19,6 +23,7 @@ public class LegendsGame extends RPGGame{
         monsters = new ArrayList<>();
         faintedHeroes = new ArrayList<>();
         resetHeroes = new ArrayList<>();
+
         map = new Map(8);
         market = new Market();
     }
@@ -32,6 +37,10 @@ public class LegendsGame extends RPGGame{
 
         NotificationCenter.mapRelated(1);
         map.printMap();
+
+        while (true) {
+
+        }
     }
 
     @Override
@@ -69,6 +78,12 @@ public class LegendsGame extends RPGGame{
                         NotificationCenter.formHeroTeam(2, i);
                     } else {
                         temp.addMembers(HeroList.getList().get(choice - 1));
+                        team = temp.getTeam();
+
+                        // Set the coordinate information of the hero
+                        team.get(i - 1).setRow(map.getSize() - 1);
+                        team.get(i - 1).setCol(3 * (i - 1));
+                        team.get(i - 1).setStartingCol(3 * (i - 1));
                         break;
                     }
                 } else {
@@ -77,8 +92,6 @@ public class LegendsGame extends RPGGame{
                 }
             }
         }
-
-        team = temp.getTeam();
     }
 
     @Override
@@ -122,6 +135,65 @@ public class LegendsGame extends RPGGame{
             resetHeroes.add(new Hero(hero.name, hero.level, hero.mana,
                     (int)hero.strength, (int)hero.dexterity, (int)hero.agility, hero.money, hero.exp));
         }
+    }
+
+    public void initializeMonsters() {
+        // The list of all monsters
+        List<Monster> monsterList = new MonsterList().getMonsters();
+
+        // The list of all monsters of the same level as a certain hero
+        List<Monster> sameLevelMonsters = new ArrayList<>();
+
+        Random seed = new Random();
+
+        for (int i = 0; i < team.size(); ++i) {
+            // For every hero in the hero team
+            for (int j = 0; j < monsterList.size(); ++j) {
+                // For every monster in the monster list
+                if (team.get(i).level == monsterList.get(j).level) {
+                    // If the monster has the same level as the current hero,
+                    // add it to [sameLevelMonsters]
+                    sameLevelMonsters.add(monsterList.get(j));
+                }
+            }
+
+            // Randomly pick a monster from [sameLevelMonsters] and add it into our monster squad
+            int monsterIndex = seed.nextInt(sameLevelMonsters.size());
+            monsters.add(sameLevelMonsters.get(monsterIndex));
+
+            sameLevelMonsters.clear();
+        }
+    }
+
+    public void printMonsters() {
+        if (monsters.isEmpty()) { return; }
+
+        NotificationCenter.monstersInfo(1);
+
+        String name;
+        double hp, damage, defenseStat, dodgeChance;
+        int level;
+
+        String splitLine = Colors.YELLOW +
+                "--><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><-><--" +
+                Colors.RESET + "\n";
+
+        System.out.println("Name                       HP    Level    Damage    Defense    Dodge Chance");
+        System.out.print(splitLine);
+
+        for (int i = 0; i < monsters.size(); ++i) {
+            // Print all the monsters together with their stats
+            name = (i + 1) + ". " + monsters.get(i).name;
+            hp = monsters.get(i).hp;
+            level = monsters.get(i).level;
+            damage = monsters.get(i).damage;
+            defenseStat = monsters.get(i).defenseStat;
+            dodgeChance = monsters.get(i).dodgeChance;
+
+            System.out.printf("%-25s %-8.0f %-7d %-9.0f %-11.0f %-6.2f", name, hp, level, damage, defenseStat, dodgeChance);
+            System.out.println();
+        }
+        System.out.println(splitLine);
     }
 
     @Override
