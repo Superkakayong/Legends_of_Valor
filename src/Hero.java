@@ -15,8 +15,6 @@ public class Hero extends Role implements Fight{
     protected double money;
     protected int exp;
     protected int expBonus; // For accumulating the EXP bonus for every successful fight
-    protected int row; // Current row position of the hero
-    protected int col; // Current column position of the hero
     protected int startingCol; // Starting column position of the hero
 
     // All kinds of props that the hero owns
@@ -42,8 +40,6 @@ public class Hero extends Role implements Fight{
         this.exp = exp;
 
         expBonus = 0;
-        row = 0;
-        col = 0;
         startingCol = 0;
 
         props = new ArrayList<>();
@@ -67,14 +63,6 @@ public class Hero extends Role implements Fight{
     public void setExpBonus(int bonus) {
         this.expBonus += bonus;
         this.exp += bonus;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
     }
 
     public void setStartingCol(int startingCol) {

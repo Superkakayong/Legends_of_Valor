@@ -34,18 +34,24 @@ public class LegendsGame extends RPGGame{
         formHeroTeam();
         printTeamMembers();
         formResetHeroes();
+        initializeMonsters();
+        printMonsters();
 
         NotificationCenter.mapRelated(1);
-        map.printMap();
 
         while (true) {
+            for (int i = 0; i < team.size(); ++i) {
+                map.printMap();
+                String action = getAction(i + 1);
 
+            }
         }
     }
 
     @Override
     public void prepare() {
         NotificationCenter.welcome();
+        NotificationCenter.showOperations();
         NotificationCenter.playOrQuit(1);
 
         Scanner sc = new Scanner(System.in);
@@ -138,6 +144,8 @@ public class LegendsGame extends RPGGame{
     }
 
     public void initializeMonsters() {
+        NotificationCenter.fight(1, "", "");
+
         // The list of all monsters
         List<Monster> monsterList = new MonsterList().getMonsters();
 
@@ -183,7 +191,7 @@ public class LegendsGame extends RPGGame{
 
         for (int i = 0; i < monsters.size(); ++i) {
             // Print all the monsters together with their stats
-            name = (i + 1) + ". " + monsters.get(i).name;
+            name = "M" + (i + 1) + ". " + monsters.get(i).name;
             hp = monsters.get(i).hp;
             level = monsters.get(i).level;
             damage = monsters.get(i).damage;
@@ -196,12 +204,43 @@ public class LegendsGame extends RPGGame{
         System.out.println(splitLine);
     }
 
+    public String getAction(int heroIndex) {
+        Scanner sc = new Scanner(System.in);
+        String action;
+        int size = map.getSize();
+
+        while (true) {
+            NotificationCenter.askForAction(heroIndex); // Ask the player to choose an action
+            NotificationCenter.showOperations(); // Show the table of all operations
+            NotificationCenter.mapRelated(2); // Ask the player to enter the desired action
+            action = sc.nextLine();
+
+            if (!action.equalsIgnoreCase("W") && !action.equalsIgnoreCase("A") &&
+                    !action.equalsIgnoreCase("S") && !action.equalsIgnoreCase("D") &&
+                    !action.equalsIgnoreCase("Q") && !action.equalsIgnoreCase("I") &&
+                    !action.equalsIgnoreCase("O") && !action.equalsIgnoreCase("P") &&
+                    !action.equalsIgnoreCase("F") && !action.equalsIgnoreCase("C") &&
+                    !action.equalsIgnoreCase("T") && !action.equalsIgnoreCase("B") &&
+                    !action.equalsIgnoreCase("V")) {
+
+                // Invalid input (i.e. not a/w/s/d/q/i)
+                NotificationCenter.mapRelated(3);
+                continue;
+            }
+
+            // If the player enters i/I, print relevant stats and continue the loop.
+            // Because only i/I can be performed multiple times within a round
+            if (action.equalsIgnoreCase("I")) { printTeamMembers(); }
+            else { break; }
+        }
+
+        return action;
+    }
+
     @Override
     public void quit() {
         printTeamMembers();
         NotificationCenter.playOrQuit(2);
         System.exit(0);
     }
-
-
 }

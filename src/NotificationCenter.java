@@ -114,8 +114,10 @@ public final class NotificationCenter {
 
         System.out.println();
         System.out.println("Please keep in mind of the following operations: ");
+    }
 
-        System.out.println(Colors.YELLOW + "---------------------------------------" + Colors.RESET);
+    public static void showOperations() {
+        System.out.println(Colors.YELLOW + "-------------------------------------------" + Colors.RESET);
 
         System.out.print(Colors.RED + "W/w" + Colors.RESET);
         System.out.print(": Move Up; ");
@@ -137,14 +139,24 @@ public final class NotificationCenter {
         System.out.print(Colors.RED + "P/p" + Colors.RESET);
         System.out.println(": Use a Potion ");
 
-        System.out.print(Colors.RED + "B/b" + Colors.RESET);
-        System.out.println(": Go Back to Nexus ");
+        System.out.print(Colors.RED + "F/f" + Colors.RESET);
+        System.out.print(": Fight (i.e. Attack); ");
+        System.out.print(Colors.RED + "C/c" + Colors.RESET);
+        System.out.println(": Cast a Spell ");
 
-        System.out.println(Colors.YELLOW + "---------------------------------------" + Colors.RESET);
+        System.out.print(Colors.RED + "T/t" + Colors.RESET);
+        System.out.print(": Teleport; ");
+        System.out.print(Colors.RED + "B/b" + Colors.RESET);
+        System.out.println(": Go Back to Nexus; ");
+
+        System.out.print(Colors.RED + "V/v" + Colors.RESET);
+        System.out.println(": Visit the Market ");
+
+        System.out.println(Colors.YELLOW + "-------------------------------------------" + Colors.RESET);
     }
 
     /*
-        Information about continuing or quitting the game
+        Information about continuing or quitting the game.
      */
     public static void playOrQuit(int index) {
         switch (index) {
@@ -173,7 +185,7 @@ public final class NotificationCenter {
     }
 
     /*
-        Information about heroes (i.e. the team of heroes)
+        Information about heroes (i.e. the team of heroes).
      */
     public static void heroesInfo(int index) {
         switch (index) {
@@ -203,7 +215,7 @@ public final class NotificationCenter {
     }
 
     /*
-        Information when forming the hero team
+        Information when forming the hero team.
      */
     public static void formHeroTeam(int index, int memberIndex) {
         switch (index) {
@@ -222,7 +234,7 @@ public final class NotificationCenter {
     }
 
     /*
-        About the team's information
+        About the team's information.
      */
     public static void teamInfo(int index) {
         switch (index) {
@@ -233,32 +245,43 @@ public final class NotificationCenter {
     }
 
     /*
-        About the game map
+        Ask which action does the player want to choose from the table of all operations.
+     */
+    public static void askForAction(int hero) {
+        System.out.println("Which action would you like to perform for " +
+                Colors.RED + "H" + hero + Colors.RESET + "?");
+    }
+
+    /*
+        About the game map.
      */
     public static void mapRelated(int index) {
         switch (index) {
             case 1:
-                System.out.println(Colors.PURPLE_BG + Colors.BLACK + " Now Let's PLAY! " +
-                        "You can use the KEYS introduced before to play the game!" + Colors.RESET);
+                System.out.println(Colors.PURPLE_BG + Colors.BLACK + " Now you can use the KEYS introduced before " +
+                        "to play the game!" + Colors.RESET);
                 System.out.println();
                 break;
             case 2:
-                System.out.println("Please enter your action (wW/aA/sS/dD/qQ/iI): ");
+                System.out.println("Please enter your action (w/a/s/d/q/i/o/p/f/c/t/b/v): ");
                 break;
             case 3:
-                System.out.println("Invalid input! Must be one of [W/w, A/a, S/s, D/d, Q/q, I/i]!");
+                System.out.println("Invalid input! Must be one of [w/a/s/d/q/i/o/p/f/c/t/b/v]!");
+                System.out.println();
                 break;
             case 4:
                 System.out.println("Cannot go outside of the map!");
+                System.out.println();
                 break;
             case 5:
                 System.out.println("Cannot visit the Inaccessible Cell!");
+                System.out.println();
                 break;
         }
     }
 
     /*
-        Show messages related to the market
+        Show messages related to the market.
      */
     public static void marketMessages(int index) {
         switch (index){
@@ -285,7 +308,7 @@ public final class NotificationCenter {
     }
 
     /*
-        Information when buying props
+        Information when buying props.
      */
     public static void buy(int index) {
         switch (index) {
@@ -303,7 +326,7 @@ public final class NotificationCenter {
     }
 
     /*
-        Information about the hero's private inventory
+        Information about the hero's private inventory.
      */
     public static void inventory(int index, String name) {
         switch (index) {
@@ -334,7 +357,7 @@ public final class NotificationCenter {
         }
     }
 
-    // About the hero's attack
+    // About the hero's attack.
     public static void heroAttack(int index) {
         switch (index) {
             case 1:
@@ -365,13 +388,13 @@ public final class NotificationCenter {
         }
     }
 
-    // About the damage to the roles (i.e. heroes/monsters)
+    // About the damage to the roles (i.e. heroes/monsters).
     public static void inflict(String name1, double damage, String name2) {
         System.out.println(Colors.RED + name1 + " has caused " + damage + " damage to " + name2 + Colors.RESET);
         System.out.println();
     }
 
-    // About the damage reduction from the armors
+    // About the damage reduction from the armors.
     public static void armorProtection(int index, String name, Armor armor) {
         switch (index) {
             case 1:
@@ -383,7 +406,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages of alive status or dead status
+    // Messages of alive status or dead status.
     public static void aliveOrDead(int index, String info, double hp) {
         switch (index) {
             case 1:
@@ -398,7 +421,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when casting a spell
+    // Messages when casting a spell.
     public static void castASpell(int index) {
         switch (index) {
             case 1:
@@ -430,7 +453,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when using a potion
+    // Messages when using a potion.
     public static void useAPotion(int index) {
         switch (index) {
             case 1:
@@ -453,7 +476,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when changing an armor
+    // Messages when changing an armor.
     public static void changeAnArmor(int index) {
         switch (index) {
             case 1:
@@ -475,7 +498,7 @@ public final class NotificationCenter {
         }
     }
 
-    // About the monster's attack
+    // About the monster's attack.
     public static void monsterAttack(int index) {
         switch (index) {
             case 1:
@@ -489,7 +512,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when visiting the market
+    // Messages when visiting the market.
     public static void visitMarket(int index, int heroIndex) {
         switch (index) {
             case 1:
@@ -511,7 +534,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when choosing a prop
+    // Messages when choosing a prop.
     public static void chooseAProp(int index) {
         switch (index) {
             case 1:
@@ -537,7 +560,7 @@ public final class NotificationCenter {
         }
     }
 
-    // About the monsters' information
+    // About the monsters' information.
     public static void monstersInfo(int index) {
         switch (index) {
             case 1:
@@ -547,13 +570,13 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when fighting
+    // Messages when fighting.
     public static void fight(int index, String hName, String mName) {
         switch (index) {
             case 1:
                 System.out.println(monster);
                 System.out.println(Colors.RED + "Attention!" + Colors.RESET);
-                System.out.println("You have confronted a monster squad whose size is as same as your team!");
+                System.out.println("You have confronted 3 monsters whose levels are EQUAL as your heroes'!");
                 System.out.println("Heroes, prepare to FIGHT!");
                 System.out.println();
                 break;
@@ -575,7 +598,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Messages when performing a level up action
+    // Messages when performing a level up action.
     public static void levelUp(String name, int newLevel) {
         System.out.println(Colors.BLUE_BG + Colors.YELLOW + " Congratulations! " + Colors.RESET);
         System.out.println("Hero " + name + " levels up!");
@@ -583,7 +606,7 @@ public final class NotificationCenter {
         System.out.println();
     }
 
-    // Messages about the status after a fight
+    // Messages about the status after a fight.
     public static void processStatus(int index) {
         switch (index) {
             case 1:
@@ -607,7 +630,7 @@ public final class NotificationCenter {
         }
     }
 
-    // Notifications about the rewarding procedure
+    // Notifications about the rewarding procedure.
     public static void reward(int index) {
         switch (index) {
             case 1:

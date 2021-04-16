@@ -51,19 +51,19 @@ public class Map {
                 // Create monsters' nexus
                 if (i == 0 && map[i][j] == null) {
                     if (j % 3 == 0) {
-                        map[i][j] = new NexusCell("  ", monsterMarker);
+                        map[i][j] = new MonsterNexusCell("  ", monsterMarker);
                         ++monsterIndex;
                     }
-                    else { map[i][j] = new NexusCell("  ", "  "); }
+                    else { map[i][j] = new MonsterNexusCell("  ", "  "); }
                 }
 
                 // Create heroes' nexus
                 if (i == size - 1 && map[i][j] == null) {
                     if (j % 3 == 0) {
-                        map[i][j] = new NexusCell(heroMarker, "  ");
+                        map[i][j] = new HeroNexusCell(heroMarker, "  ");
                         ++heroIndex;
                     }
-                    else { map[i][j] = new NexusCell("  ", "  "); }
+                    else { map[i][j] = new HeroNexusCell("  ", "  "); }
                 }
 
                 int temp = seed.nextInt(10) + 1;
@@ -114,8 +114,8 @@ public class Map {
         }
     }
 
-    public static void main(String[] args) {
-        Map m = new Map(8);
-        m.printMap();
-    }
+//    public static void main(String[] args) {
+//        Map m = new Map(8);
+//        m.printMap();
+//    }
 }
