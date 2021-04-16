@@ -3,10 +3,13 @@ import java.util.Random;
 public class Map {
     private int size;
     private Cell[][] map;
+    private int[] maxExploredLevels = new int[3];
 
     public Map(int size) {
         this.size = size;
         this.map = new Cell[size][size];
+
+        setMaxExploredLevels();
         mapInitialization();
     }
 
@@ -16,6 +19,19 @@ public class Map {
 
     public Cell[][] getMap() {
         return map;
+    }
+
+    public int[] getMaxExploredLevels() {
+        return maxExploredLevels;
+    }
+
+    public void setMaxExploredLevels() {
+        for (int i : maxExploredLevels) { i = size - 1; }
+    }
+
+    public void updateExploredLevel(int lane) {
+        if (lane < 0 || lane > maxExploredLevels.length) { return; }
+        --maxExploredLevels[lane];
     }
 
     private void mapInitialization() {
@@ -35,19 +51,19 @@ public class Map {
                 // Create monsters' nexus
                 if (i == 0 && map[i][j] == null) {
                     if (j % 3 == 0) {
-                        map[i][j] = new NexusCell("  ", monsterMarker);
+                        map[i][j] = new MonsterNexusCell("  ", monsterMarker);
                         ++monsterIndex;
                     }
-                    else { map[i][j] = new NexusCell("  ", "  "); }
+                    else { map[i][j] = new MonsterNexusCell("  ", "  "); }
                 }
 
                 // Create heroes' nexus
                 if (i == size - 1 && map[i][j] == null) {
                     if (j % 3 == 0) {
-                        map[i][j] = new NexusCell(heroMarker, "  ");
+                        map[i][j] = new HeroNexusCell(heroMarker, "  ");
                         ++heroIndex;
                     }
-                    else { map[i][j] = new NexusCell("  ", "  "); }
+                    else { map[i][j] = new HeroNexusCell("  ", "  "); }
                 }
 
                 int temp = seed.nextInt(10) + 1;
@@ -64,11 +80,30 @@ public class Map {
 
     public void printMap() {
         System.out.println(Colors.PURPLE_BG + Colors.BLACK +" World Map: " + Colors.RESET);
+        System.out.println();
 
-        for (Cell[] row : map) {
-            for (int i = 1; i <= 3; ++i) {
-                for (Cell cell : row) {
-                    if (i != 2) { System.out.print(cell.getTopAndBottom() + "   "); }
+        // Print all the column indexes (i.e. "col i: ")
+        System.out.print("        ");
+        for (int i = 0; i < map.length; ++i) {
+            // For every column in the map
+            System.out.print(" Col " + i + ":     ");
+        }
+        System.out.println();
+
+        for (int i = 0; i < map.length; ++i) {
+            // For every row in the map
+            for (int j = 1; j <= 3; ++j) {
+                // For every line in the cell (a cell has three lines: top, middle, bottom)
+
+                // Print all the row indexes (i.e. "row i: ")
+                if (j == 2) { System.out.print("Row " + i + ": "); }
+                else { System.out.print("       "); }
+
+                for (Cell cell : map[i]) {
+                    // For every cell in the row
+
+                    // If this is the top line or the bottom line of the cell
+                    if (j != 2) { System.out.print(cell.getTopAndBottom() + "   "); }
                     else { System.out.print(cell.getMiddle() + "   "); }
                 }
 
@@ -79,8 +114,8 @@ public class Map {
         }
     }
 
-    public static void main(String[] args) {
-        Map m = new Map(8);
-        m.printMap();
-    }
+//    public static void main(String[] args) {
+//        Map m = new Map(8);
+//        m.printMap();
+//    }
 }
