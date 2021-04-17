@@ -2,9 +2,10 @@
  * This class represents a map cell of the map.
  */
 public class Cell {
-    private String leftMarker;
-    private String rightMarker;
-    private String cellType;
+    protected String leftMarker;
+    protected String rightMarker;
+    protected String cellType;
+    protected boolean hasMonsters;
 
     private StringBuilder topAndBottom;
     private StringBuilder middle;
@@ -16,23 +17,16 @@ public class Cell {
         this.rightMarker = rightMarker;
         this.cellType = cellType;
 
+        hasMonsters = false;
+
         this.topAndBottom = new StringBuilder();
-        this.middle = new StringBuilder();
 
         this.setTopAndBottom();
         this.setMiddle();
     }
 
-    public String getLeftMarker() {
-        return leftMarker;
-    }
-
-    public String getRightMarker() {
-        return rightMarker;
-    }
-
-    public String getCellType() {
-        return cellType;
+    public boolean getHasMonsters() {
+        return hasMonsters;
     }
 
     public StringBuilder getTopAndBottom() {
@@ -43,12 +37,17 @@ public class Cell {
         return middle;
     }
 
-    private void setTopAndBottom() {
+    public void setTopAndBottom() {
         topAndBottom.append(cellType).append(" ").append("-").append(" ").append(cellType).append(" ").
                 append("-").append(" ").append(cellType);
     }
 
-    private void setMiddle() {
+    public void setMiddle() {
+        this.middle = new StringBuilder();
         middle.append("| ").append(leftMarker).append("•").append(rightMarker).append(" |");
+    }
+
+    public void setHasMonsters(boolean hasMonsters) {
+        this.hasMonsters = hasMonsters;
     }
 }

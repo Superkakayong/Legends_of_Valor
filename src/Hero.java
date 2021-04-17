@@ -16,6 +16,7 @@ public class Hero extends Role implements Fight{
     protected int exp;
     protected int expBonus; // For accumulating the EXP bonus for every successful fight
     protected int startingCol; // Starting column position of the hero
+    protected String heroMarker;
 
     // All kinds of props that the hero owns
     protected ArrayList<Prop> props;
@@ -594,13 +595,14 @@ public class Hero extends Role implements Fight{
         setCol(startingCol);
     }
 
-    public void teleport(Map m) {
-        int newRow, newCol;
+    public boolean teleport(Map m) {
+        int newRow = -1, newCol = -1;
+        boolean validIndexes = false;
         Scanner sc = new Scanner(System.in);
 
         NotificationCenter.teleport(1);
 
-        while (true) {
+        while (!validIndexes) {
             while (true) {
                 // Get a valid row index to teleport
                 NotificationCenter.teleport(7);
@@ -626,31 +628,46 @@ public class Hero extends Role implements Fight{
 
                     if (newCol < 0 || newCol >= m.getSize()) {
                         NotificationCenter.teleport(2);
-                    } else { break; }
+                    } else { validIndexes = true; break; }
                 } else {
                     sc.next();
                     NotificationCenter.teleport(3);
                 }
             }
-
-            if (isInaccessibleCell(m, newRow, newCol)) {
-                // The desired cell is an Inaccessible Cell
-                NotificationCenter.teleport(4);
-            } else if (isSameLane(newCol)) {
-                // The desired cell is within the same lane of the current cell
-                NotificationCenter.teleport(5);
-            } else if (!isValidLane(m, newRow, newCol)) {
-                // The desired cell has not been explored yet
-                NotificationCenter.teleport(6);
-            } else {
-                // A valid cell to teleport
-                NotificationCenter.teleport(9);
-
-                setRow(newRow);
-                setCol(newCol);
-                break;
-            }
         }
+
+        if (isInaccessibleCell(m, newRow, newCol)) {
+            // The desired cell is an Inaccessible Cell
+            NotificationCenter.teleport(4);
+        } else if (isSameLane(newCol)) {
+            // The desired cell is within the same lane of the current cell
+            NotificationCenter.teleport(5);
+        } else if (!isValidCell(m, newRow, newCol)) {
+            // The desired cell has not been explored yet
+            NotificationCenter.teleport(6);
+        } else if (isTaken(m, newRow, newCol)) {
+            // The desired cell has been taken by another hero
+            NotificationCenter.teleport(10);
+        } else {
+            // A valid cell to teleport
+            NotificationCenter.teleport(9);
+
+            // Set the left marker of the original cell to be "  "
+            m.getMap()[row][col].leftMarker = "  ";
+            m.getMap()[row][col].setMiddle();
+
+            // Update the new row and column values for the hero
+            setRow(newRow);
+            setCol(newCol);
+
+            // Set the left marker of the original cell to be the current hero's marker
+            m.getMap()[row][col].leftMarker = heroMarker;
+            m.getMap()[row][col].setMiddle();
+
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isInaccessibleCell(Map m, int newRow, int newCol) {
@@ -661,14 +678,18 @@ public class Hero extends Role implements Fight{
         return Math.abs(newCol - col) <= 1;
     }
 
-    private boolean isValidLane(Map m, int newRow, int newCol) {
+    private boolean isValidCell(Map m, int newRow, int newCol) {
         int lane;
 
         // Calculate the corresponding lane of the teleport cell
         if (newCol <= 1) { lane = 0; }
         else if (m.getSize() - newCol <= 2) { lane = 2; }
-        else lane = 1;
+        else { lane = 1; }
 
         return newRow >= m.getMaxExploredLevels()[lane];
+    }
+
+    private boolean isTaken(Map map, int newRow, int newCol) {
+        return !map.getMap()[newRow][newCol].leftMarker.equals("  ");
     }
 }
