@@ -16,6 +16,7 @@ public class Hero extends Role implements Fight{
     protected int exp;
     protected int expBonus; // For accumulating the EXP bonus for every successful fight
     protected int startingCol; // Starting column position of the hero
+    protected String heroMarker;
 
     // All kinds of props that the hero owns
     protected ArrayList<Prop> props;
@@ -642,6 +643,9 @@ public class Hero extends Role implements Fight{
             } else if (!isValidLane(m, newRow, newCol)) {
                 // The desired cell has not been explored yet
                 NotificationCenter.teleport(6);
+            } else if (isTaken(m, newRow, newCol)) {
+                // The desired cell has been taken by another hero
+                NotificationCenter.teleport(10);
             } else {
                 // A valid cell to teleport
                 NotificationCenter.teleport(9);
@@ -667,8 +671,12 @@ public class Hero extends Role implements Fight{
         // Calculate the corresponding lane of the teleport cell
         if (newCol <= 1) { lane = 0; }
         else if (m.getSize() - newCol <= 2) { lane = 2; }
-        else lane = 1;
+        else { lane = 1; }
 
         return newRow >= m.getMaxExploredLevels()[lane];
+    }
+
+    private boolean isTaken(Map map, int newRow, int newCol) {
+        return map.getMap()[newRow][newCol].leftMarker.equalsIgnoreCase("  ");
     }
 }

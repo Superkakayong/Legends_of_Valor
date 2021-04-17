@@ -122,12 +122,12 @@ public final class NotificationCenter {
         System.out.print(Colors.RED + "W/w" + Colors.RESET);
         System.out.print(": Move Up; ");
         System.out.print(Colors.RED + "A/a" + Colors.RESET);
-        System.out.println(": Move Left; ");
+        System.out.println(": Move Left ");
 
         System.out.print(Colors.RED + "S/s" + Colors.RESET);
         System.out.print(": Move Down; ");
         System.out.print(Colors.RED + "D/d" + Colors.RESET);
-        System.out.println(": Move Right; ");
+        System.out.println(": Move Right ");
 
         System.out.print(Colors.RED + "Q/q" + Colors.RESET);
         System.out.print(": Quit; ");
@@ -137,18 +137,20 @@ public final class NotificationCenter {
         System.out.print(Colors.RED + "O/o" + Colors.RESET);
         System.out.print(": Change a Weapon; ");
         System.out.print(Colors.RED + "P/p" + Colors.RESET);
-        System.out.println(": Use a Potion ");
+        System.out.println(": Change an Armor ");
 
+        System.out.print(Colors.RED + "U/u" + Colors.RESET);
+        System.out.print(": Use a Potion; ");
         System.out.print(Colors.RED + "F/f" + Colors.RESET);
-        System.out.print(": Fight (i.e. Attack); ");
+        System.out.println(": Fight (i.e. Attack) ");
+
         System.out.print(Colors.RED + "C/c" + Colors.RESET);
-        System.out.println(": Cast a Spell ");
-
+        System.out.print(": Cast a Spell; ");
         System.out.print(Colors.RED + "T/t" + Colors.RESET);
-        System.out.print(": Teleport; ");
-        System.out.print(Colors.RED + "B/b" + Colors.RESET);
-        System.out.println(": Go Back to Nexus; ");
+        System.out.println(": Teleport ");
 
+        System.out.print(Colors.RED + "B/b" + Colors.RESET);
+        System.out.print(": Go Back to Nexus; ");
         System.out.print(Colors.RED + "V/v" + Colors.RESET);
         System.out.println(": Visit the Market ");
 
@@ -276,6 +278,18 @@ public final class NotificationCenter {
             case 5:
                 System.out.println("Cannot visit the Inaccessible Cell!");
                 System.out.println();
+                break;
+            case 6:
+                System.out.println("Cannot move behind a monster without killing it!");
+                break;
+            case 7:
+                System.out.println("Invalid action! The monster is out of your range!");
+                break;
+            case 8:
+                System.out.println("You are not in the nexus! Cannot visit the market!");
+                break;
+            case 9:
+                System.out.println("Cannot move to a cell that has already been taken!");
                 break;
         }
     }
@@ -516,13 +530,13 @@ public final class NotificationCenter {
     public static void visitMarket(int index, int heroIndex) {
         switch (index) {
             case 1:
-                System.out.println(Colors.PURPLE_BG + Colors.BLACK + " This is a market cell~ " + Colors.RESET);
-                System.out.println();
-                System.out.println("What would you like to do for your hero " + Colors.RED + heroIndex
-                        + Colors.RESET + ": ");
+                System.out.println(Colors.PURPLE_BG + Colors.BLACK + " Welcome to the market! " + Colors.RESET);
                 System.out.println();
                 break;
             case 2:
+                System.out.println("What would you like to do for " + Colors.RED + "H" + heroIndex
+                        + Colors.RESET + ": ");
+                System.out.println();
                 System.out.println("1. Buy     2. Sell     3. Finish and Pass");
                 break;
             case 3:
@@ -678,6 +692,10 @@ public final class NotificationCenter {
                 break;
             case 9:
                 System.out.println(Colors.BLUE_BG + Colors.BLACK + " Teleport Successfully! " + Colors.RESET);
+                break;
+            case 10:
+                System.out.println("Cannot teleport to this cell since it has already been taken by another hero!");
+                break;
         }
     }
 }
