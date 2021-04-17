@@ -325,7 +325,7 @@ public class LegendsGame extends RPGGame{
 
         if (action.equalsIgnoreCase("B")) { team.get(heroIndex).backToNexus(map.getSize()); }
 
-        if (action.equalsIgnoreCase("T")) { team.get(heroIndex).teleport(map); }
+        if (action.equalsIgnoreCase("T")) { return team.get(heroIndex).teleport(map); }
 
         if (action.equalsIgnoreCase("W") ||
                 action.equalsIgnoreCase("A") ||

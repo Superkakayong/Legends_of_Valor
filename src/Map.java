@@ -26,11 +26,11 @@ public class Map {
     }
 
     public void setMaxExploredLevels() {
-        for (int i : maxExploredLevels) { i = size - 1; }
+        for (int i = 0; i < 3; ++i) { maxExploredLevels[i] = size - 1; }
     }
 
     public void updateExploredLevel(int lane) {
-        if (lane < 0 || lane > maxExploredLevels.length) { return; }
+        if (lane < 0 || lane >= maxExploredLevels.length) { return; }
         --maxExploredLevels[lane];
     }
 
