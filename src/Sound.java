@@ -9,30 +9,36 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class Sound {
-    public static void main(String[] args) {
+public class Sound implements Runnable{
+    public Sound() {}
 
+    @Override
+    public void run() {
         File file;
+
         AudioInputStream audio;
         AudioFormat format;
+
         SourceDataLine auline = null;
         DataLine.Info info;
+
         try {
-            System.out.println("Start");
-            file = new File("hdewig's theme.wav");
+            file = new File("Sound.wav");
             audio = AudioSystem.getAudioInputStream(file);
             format = audio.getFormat();
             info = new DataLine.Info(SourceDataLine.class, format);
+
             auline = (SourceDataLine) AudioSystem.getLine(info);
             auline.open(format);
             auline.start();
+
             int nBytesRead = 0;
             byte[] abData = new byte[524288];
+
             while (nBytesRead != -1) {
                 nBytesRead = audio.read(abData, 0, abData.length);
-                if (nBytesRead >= 0) {
-                    auline.write(abData, 0, nBytesRead);
-                }
+
+                if (nBytesRead >= 0) { auline.write(abData, 0, nBytesRead); }
             }
         } catch (IOException e) {
             // System.out.println(e.getMessage());
@@ -47,6 +53,5 @@ public class Sound {
             auline.drain();
             auline.close();
         }
-
     }
 }

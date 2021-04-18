@@ -6,6 +6,7 @@ public class Cell {
     protected String rightMarker;
     protected String cellType;
     protected boolean hasMonsters;
+    protected boolean hasHeroes;
 
     private StringBuilder topAndBottom;
     private StringBuilder middle;
@@ -18,15 +19,12 @@ public class Cell {
         this.cellType = cellType;
 
         hasMonsters = false;
+        hasHeroes = false;
 
         this.topAndBottom = new StringBuilder();
 
         this.setTopAndBottom();
         this.setMiddle();
-    }
-
-    public boolean getHasMonsters() {
-        return hasMonsters;
     }
 
     public StringBuilder getTopAndBottom() {
@@ -44,10 +42,15 @@ public class Cell {
 
     public void setMiddle() {
         this.middle = new StringBuilder();
-        middle.append("| ").append(leftMarker).append("•").append(rightMarker).append(" |");
+        middle.append(Colors.WHITE + "| " + Colors.RESET).append(Colors.PURPLE + leftMarker + Colors.RESET).append("•").
+                append(Colors.PURPLE + rightMarker + Colors.RESET).append(Colors.WHITE + " |" + Colors.RESET);
     }
 
     public void setHasMonsters(boolean hasMonsters) {
         this.hasMonsters = hasMonsters;
+    }
+
+    public void setHasHeroes(boolean hasHeroes) {
+        this.hasHeroes = hasHeroes;
     }
 }

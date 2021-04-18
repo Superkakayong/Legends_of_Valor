@@ -1,5 +1,5 @@
 public class CaveCell extends Cell{
     public CaveCell(String leftMarker, String rightMarker) {
-        super(leftMarker, rightMarker, "C");
+        super(leftMarker, rightMarker, Colors.CYAN + "C" + Colors.RESET);
     }
 }

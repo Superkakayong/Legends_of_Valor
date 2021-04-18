@@ -7,6 +7,7 @@ public class Monster extends Role implements Fight{
     protected double damage;
     protected double defenseStat;
     protected double dodgeChance;
+    protected String monsterMarker;
 
     public Monster() {}
 
@@ -36,16 +37,21 @@ public class Monster extends Role implements Fight{
     /*
         Overload the attack() method above.
      */
-    public void attack(Hero hero) {
+    public void attack(Hero hero, Map map) {
         String heroName = hero.name;
         double heroDodgeChance = hero.dodgeChance;
 
         // Determine if the hero can dodge this attack
         double rand = Math.random();
 
+        Cell[][] m = map.getMap();
+
+        // Cave cells boost the agility of any hero who is inside them by 10%
+        if (m[hero.row][hero.col] instanceof CaveCell) { heroDodgeChance *= 1.1; }
+
         if (rand <= heroDodgeChance) {
             // The hero has dodged the attack
-            NotificationCenter.monsterAttack(1);
+            NotificationCenter.monsterAttack(1, monsterMarker, hero.heroMarker);
             return;
         }
 
