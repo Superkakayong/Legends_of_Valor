@@ -15,19 +15,19 @@ public class MonsterList {
         monsters.add(new Dragon("Swedish Short Snout", 7, 750, 400, 45));
         monsters.add(new Dragon("T-Rex", 10, 1500, 900, 65));
         monsters.add(new Dragon("Peruvian Vipertooth", 2, 500, 500, 30));
-        monsters.add(new Dragon("Norwegian Ridgeback", 4, 580, 400, 30));
+        monsters.add(new Dragon("Norwegian Ridgeback", 3, 580, 400, 30));
 
         monsters.add(new Exoskeleton("Erumpent", 7, 600, 800, 30));
         monsters.add(new Exoskeleton("Grindylow", 8, 650, 850, 45));
         monsters.add(new Exoskeleton("Centaur", 6, 350, 650, 50));
-        monsters.add(new Exoskeleton("Basilisk", 10, 700, 1000, 70));
+        monsters.add(new Exoskeleton("Basilisk", 9, 700, 1000, 70));
         monsters.add(new Exoskeleton("Unicorn", 2, 400, 500, 30));
 
-        monsters.add(new Spirit("FallenAngel", 5, 400, 500, 35));
+        monsters.add(new Spirit("FallenAngel", 4, 400, 500, 35));
         monsters.add(new Spirit("Bellatrix", 8, 800, 700, 85));
-        monsters.add(new Spirit("Malfoy", 6, 600, 400, 70));
+        monsters.add(new Spirit("Malfoy", 5, 600, 400, 70));
         monsters.add(new Spirit("Death Eaters", 7, 600, 500, 75));
-        monsters.add(new Spirit("Voldemort", 10, 1200, 1000, 90));
+        monsters.add(new Spirit("Voldemort", 11, 1200, 1000, 90));
     }
 
     public ArrayList<Monster> getMonsters() {

@@ -52,6 +52,7 @@ public class Map {
                 if (i == 0 && map[i][j] == null) {
                     if (j % 3 == 0) {
                         map[i][j] = new MonsterNexusCell("  ", monsterMarker);
+                        map[i][j].setHasMonsters(true);
                         ++monsterIndex;
                     }
                     else { map[i][j] = new MonsterNexusCell("  ", "  "); }
@@ -61,6 +62,7 @@ public class Map {
                 if (i == size - 1 && map[i][j] == null) {
                     if (j % 3 == 0) {
                         map[i][j] = new HeroNexusCell(heroMarker, "  ");
+                        map[i][j].setHasHeroes(true);
                         ++heroIndex;
                     }
                     else { map[i][j] = new HeroNexusCell("  ", "  "); }
@@ -113,9 +115,4 @@ public class Map {
             System.out.println();
         }
     }
-
-//    public static void main(String[] args) {
-//        Map m = new Map(8);
-//        m.printMap();
-//    }
 }
