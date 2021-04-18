@@ -16,6 +16,7 @@ public class LegendsGame extends RPGGame implements Runnable{
     private Role deadRole; // The current dead role (hero/monster)
 
     private int numOfRounds; // The number of rounds
+    private int monsterSquadSize; // The size of the monster squad
     private boolean isHeroDead;
     private boolean isMonsterDead;
     private boolean heroReachesMonsterNexus;
@@ -32,6 +33,7 @@ public class LegendsGame extends RPGGame implements Runnable{
         deadRole = null;
 
         numOfRounds = 0;
+        monsterSquadSize = 0;
         isHeroDead = false;
         isMonsterDead = false;
         heroReachesMonsterNexus = false;
@@ -235,6 +237,8 @@ public class LegendsGame extends RPGGame implements Runnable{
             int monsterIndex = seed.nextInt(sameLevelMonsters.size());
             monsters.add(sameLevelMonsters.get(monsterIndex));
 
+            ++monsterSquadSize;
+
             int size = monsters.size();
 
             // Set the coordinate information of the monster
@@ -243,7 +247,7 @@ public class LegendsGame extends RPGGame implements Runnable{
 
             if (map.getMap()[0][3 * i].rightMarker.equals("  ")) {
                 // If the monster is created after 8 rounds, the rightMarker needs to be manually set to Mx
-                map.getMap()[0][3 * i].rightMarker = "M" + size;
+                map.getMap()[0][3 * i].rightMarker = "M" + monsterSquadSize;
                 map.getMap()[0][3 * i].setMiddle();
             }
             monsters.get(size - 1).monsterMarker = map.getMap()[0][3 * i].rightMarker;
@@ -272,9 +276,9 @@ public class LegendsGame extends RPGGame implements Runnable{
         System.out.print(splitLine);
 
         for (int i = 0; i < monsters.size(); ++i) {
-            // Print all the monsters together with their statss
-            name = "M" + (i + 1) + ". " + monsters.get(i).name;
-//            name = map.getMap()[monsters.get(i).row][monsters.get(i).col].rightMarker + ". " + monsters.get(i).name;
+            // Print all the monsters together with their stats
+//            name = "M" + (i + 1) + ". " + monsters.get(i).name;
+            name = map.getMap()[monsters.get(i).row][monsters.get(i).col].rightMarker + ". " + monsters.get(i).name;
             hp = monsters.get(i).hp;
             level = monsters.get(i).level;
             damage = monsters.get(i).damage;

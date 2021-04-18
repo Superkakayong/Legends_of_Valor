@@ -82,7 +82,7 @@ public class Hero extends Role implements Fight{
         Check if a hero can level up.
      */
     public boolean checkLevelUp() {
-        return levelUpBehavior.canLevelUp();
+        return levelUpBehavior.canLevelUp() && level <= 9;
     }
 
     /*
