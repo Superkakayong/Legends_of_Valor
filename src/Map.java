@@ -1,16 +1,15 @@
 import java.util.Random;
 
-/**
- * This class represents the game map.
- */
 public class Map {
     private int size;
     private Cell[][] map;
-    private Cell originalCell; // To recover the previous cell after the hero team leaves
+    private int[] maxExploredLevels = new int[3];
 
     public Map(int size) {
         this.size = size;
         this.map = new Cell[size][size];
+
+        setMaxExploredLevels();
         mapInitialization();
     }
 
@@ -22,98 +21,101 @@ public class Map {
         return map;
     }
 
-    public Cell getOriginalCell() {
-        return originalCell;
+    public int[] getMaxExploredLevels() {
+        return maxExploredLevels;
+    }
+
+    public void setMaxExploredLevels() {
+        for (int i = 0; i < 3; ++i) { maxExploredLevels[i] = size - 1; }
+    }
+
+    public void updateExploredLevel(int lane) {
+        if (lane < 0 || lane >= maxExploredLevels.length) { return; }
+        --maxExploredLevels[lane];
     }
 
     private void mapInitialization() {
         Random seed = new Random();
+        int heroIndex = 1, monsterIndex = 1;
 
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                if (i == 0 && j == 0) {
-                    map[i][j] = new HeroCell();
-                    continue;
-                }
+                // We have derived the formula of the column index of Inaccessible Cells
+                // according to the [General Term Formula of Arithmetic Sequence].
+                // i.e. Inaccessible Cells should appear in column 2, 5, 8, etc
+                if (3 * j + 2 < size) { map[i][3 * j + 2] = new InaccessibleCell(); }
 
-                if (i < 3 && j < 3) {
-                    if (i == 0 && j == 1) {
-                        // Force a market at cell in row 0 col 1
-                        // To let heroes equip themselves at the beginning
-                        map[i][j] = new MarketCell();
-                        continue;
+                String heroMarker = "H" + heroIndex;
+                String monsterMarker = "M" + monsterIndex;
+
+                // Create monsters' nexus
+                if (i == 0 && map[i][j] == null) {
+                    if (j % 3 == 0) {
+                        map[i][j] = new MonsterNexusCell("  ", monsterMarker);
+                        ++monsterIndex;
                     }
-
-                    // Prevent heroes from being stuck at the beginning
-                    map[i][j] = new CommonSpaceCell();
-                    continue;
+                    else { map[i][j] = new MonsterNexusCell("  ", "  "); }
                 }
 
-                int temp = seed.nextInt(100) + 1;
+                // Create heroes' nexus
+                if (i == size - 1 && map[i][j] == null) {
+                    if (j % 3 == 0) {
+                        map[i][j] = new HeroNexusCell(heroMarker, "  ");
+                        ++heroIndex;
+                    }
+                    else { map[i][j] = new HeroNexusCell("  ", "  "); }
+                }
 
-                if (1 <= temp && temp <= 20) {
-                    map[i][j] = new InaccessibleCell();
-                } else if (21 <= temp && temp <= 75) {
-                    map[i][j] = new CommonSpaceCell();
-                } else {
-                    map[i][j] = new MarketCell();
+                int temp = seed.nextInt(10) + 1;
+
+                if (map[i][j] == null) {
+                    if (1 <= temp && temp <= 4) { map[i][j] = new PlainCell("  ", "  "); }
+                    else if (5 <= temp && temp <= 6) { map[i][j] = new BushCell("  ", "  "); }
+                    else if (7 <= temp && temp <= 8) { map[i][j] = new CaveCell("  ", "  "); }
+                    else if (9 <= temp && temp <= 10) { map[i][j] = new KoulouCell("  ", "  "); }
                 }
             }
         }
     }
 
-    /*
-        Print the map.
-     */
     public void printMap() {
         System.out.println(Colors.PURPLE_BG + Colors.BLACK +" World Map: " + Colors.RESET);
-
-        StringBuilder topBottomBoundary = new StringBuilder("");
-
-        for (int i = 0; i < this.size; ++i) {
-            // Create the top and bottom split boundary
-            topBottomBoundary.append("+---");
-        }
-        topBottomBoundary.append("+");
-
-        for (Cell[] row : map) {
-            // For each row in the map
-            System.out.println(topBottomBoundary);
-
-            for (Cell cell : row) {
-                // For each cell in the row
-                System.out.print("|" + cell.getMarker() + "");
-            }
-            System.out.println("|");
-        }
-        System.out.println(topBottomBoundary);
         System.out.println();
+
+        // Print all the column indexes (i.e. "col i: ")
+        System.out.print("        ");
+        for (int i = 0; i < map.length; ++i) {
+            // For every column in the map
+            System.out.print(" Col " + i + ":     ");
+        }
+        System.out.println();
+
+        for (int i = 0; i < map.length; ++i) {
+            // For every row in the map
+            for (int j = 1; j <= 3; ++j) {
+                // For every line in the cell (a cell has three lines: top, middle, bottom)
+
+                // Print all the row indexes (i.e. "row i: ")
+                if (j == 2) { System.out.print("Row " + i + ": "); }
+                else { System.out.print("       "); }
+
+                for (Cell cell : map[i]) {
+                    // For every cell in the row
+
+                    // If this is the top line or the bottom line of the cell
+                    if (j != 2) { System.out.print(cell.getTopAndBottom() + "   "); }
+                    else { System.out.print(cell.getMiddle() + "   "); }
+                }
+
+                System.out.println();
+            }
+
+            System.out.println();
+        }
     }
 
-    /*
-        Special case: when the hero team leaves its starting cell (i.e. Cell [0, 0]),
-        we manually set it to be a COMMON AREA cell.
-
-        Since the marker of the starting cell is already the hero team marker,
-        the "originalCell" will also be a HeroCell. Then once the hero team leaves,
-        there will be TWO hero team markers, which is not our intention.
-     */
-    public void setStartingCell() {
-        map[0][0] = new CommonSpaceCell();
-    }
-
-    /*
-        When the hero team visits a specific cell, covers it with a HeroCell
-     */
-    public void setHeroCell(int row, int col) {
-        originalCell = map[row][col];
-        map[row][col] = new HeroCell();
-    }
-
-    /*
-        After the hero team leaves a specific cell, recovers it with its original cell
-     */
-    public void recoverCell(int row, int col) {
-        map[row][col] = originalCell;
-    }
+//    public static void main(String[] args) {
+//        Map m = new Map(8);
+//        m.printMap();
+//    }
 }

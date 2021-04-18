@@ -15,6 +15,8 @@ public class Hero extends Role implements Fight{
     protected double money;
     protected int exp;
     protected int expBonus; // For accumulating the EXP bonus for every successful fight
+    protected int startingCol; // Starting column position of the hero
+    protected String heroMarker;
 
     // All kinds of props that the hero owns
     protected ArrayList<Prop> props;
@@ -37,7 +39,9 @@ public class Hero extends Role implements Fight{
         this.setDodgeChance();
         this.money = money;
         this.exp = exp;
+
         expBonus = 0;
+        startingCol = 0;
 
         props = new ArrayList<>();
         weapons = new ArrayList<>();
@@ -62,9 +66,14 @@ public class Hero extends Role implements Fight{
         this.exp += bonus;
     }
 
+    public void setStartingCol(int startingCol) {
+        this.startingCol = startingCol;
+    }
+
+
     /*
         Check if a hero has fainted.
-     */
+    */
     public boolean hasFainted() {
         return hp <= 0;
     }
@@ -579,5 +588,108 @@ public class Hero extends Role implements Fight{
         equippedWeapon = temp; // Substitute temp for the current using weapon (i.e. equippedWeapon)
 
         return true;
+    }
+
+    public void backToNexus(int mapSize) {
+        setRow(mapSize - 1);
+        setCol(startingCol);
+    }
+
+    public boolean teleport(Map m) {
+        int newRow = -1, newCol = -1;
+        boolean validIndexes = false;
+        Scanner sc = new Scanner(System.in);
+
+        NotificationCenter.teleport(1);
+
+        while (!validIndexes) {
+            while (true) {
+                // Get a valid row index to teleport
+                NotificationCenter.teleport(7);
+
+                if (sc.hasNextInt()) {
+                    newRow = sc.nextInt();
+
+                    if (newRow < 0 || newRow >= m.getSize()) {
+                        NotificationCenter.teleport(2);
+                    } else { break; }
+                } else {
+                    sc.next();
+                    NotificationCenter.teleport(3);
+                }
+            }
+
+            while (true) {
+                // Get a valid column index to teleport
+                NotificationCenter.teleport(8);
+
+                if (sc.hasNextInt()) {
+                    newCol = sc.nextInt();
+
+                    if (newCol < 0 || newCol >= m.getSize()) {
+                        NotificationCenter.teleport(2);
+                    } else { validIndexes = true; break; }
+                } else {
+                    sc.next();
+                    NotificationCenter.teleport(3);
+                }
+            }
+        }
+
+        if (isInaccessibleCell(m, newRow, newCol)) {
+            // The desired cell is an Inaccessible Cell
+            NotificationCenter.teleport(4);
+        } else if (isSameLane(newCol)) {
+            // The desired cell is within the same lane of the current cell
+            NotificationCenter.teleport(5);
+        } else if (!isValidCell(m, newRow, newCol)) {
+            // The desired cell has not been explored yet
+            NotificationCenter.teleport(6);
+        } else if (isTaken(m, newRow, newCol)) {
+            // The desired cell has been taken by another hero
+            NotificationCenter.teleport(10);
+        } else {
+            // A valid cell to teleport
+            NotificationCenter.teleport(9);
+
+            // Set the left marker of the original cell to be "  "
+            m.getMap()[row][col].leftMarker = "  ";
+            m.getMap()[row][col].setMiddle();
+
+            // Update the new row and column values for the hero
+            setRow(newRow);
+            setCol(newCol);
+
+            // Set the left marker of the original cell to be the current hero's marker
+            m.getMap()[row][col].leftMarker = heroMarker;
+            m.getMap()[row][col].setMiddle();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isInaccessibleCell(Map m, int newRow, int newCol) {
+        return m.getMap()[newRow][newCol] instanceof InaccessibleCell;
+    }
+
+    private boolean isSameLane(int newCol) {
+        return Math.abs(newCol - col) <= 1;
+    }
+
+    private boolean isValidCell(Map m, int newRow, int newCol) {
+        int lane;
+
+        // Calculate the corresponding lane of the teleport cell
+        if (newCol <= 1) { lane = 0; }
+        else if (m.getSize() - newCol <= 2) { lane = 2; }
+        else { lane = 1; }
+
+        return newRow >= m.getMaxExploredLevels()[lane];
+    }
+
+    private boolean isTaken(Map map, int newRow, int newCol) {
+        return !map.getMap()[newRow][newCol].leftMarker.equals("  ");
     }
 }

@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -8,67 +8,62 @@ import java.util.Scanner;
  * It controls all the game logics.
  * It is a role playing game, therefore it inherits from the RPGGame class.
  */
-public class LegendsGame extends RPGGame {
-    private int numOfHeroes;
-    private int row; // Row position of the hero
-    private int col; // Column position of the hero
-
+public class LegendsGame extends RPGGame{
     private ArrayList<Hero> team; // The hero team
     private ArrayList<Monster> monsters; // The monster squad
     private ArrayList<Hero> faintedHeroes; // All fainted heroes
     private ArrayList<Hero> resetHeroes; // For resetting the heroes after a fight
+
     private Map map; // The game map
     private Market market; // The market in the market cell
 
     public LegendsGame() {
-        numOfHeroes = 0;
-        row = 0;
-        col = 0;
-
         team = new ArrayList<>();
         monsters = new ArrayList<>();
         faintedHeroes = new ArrayList<>();
         resetHeroes = new ArrayList<>();
+
         map = new Map(8);
         market = new Market();
     }
 
-    /*
-        This is the CORE method of this class (or the entire project).
-        It is very concise and easy to understand, because the code is highly modularized!
-     */
     @Override
     public void play() {
+//        map.printMap();
+//        map.getMap()[7][0].leftMarker = "qq";
+//        map.getMap()[7][0].setMiddle();
+//        map.printMap();
         prepare();
         formHeroTeam();
         printTeamMembers();
         formResetHeroes();
+        initializeMonsters();
+        printMonsters();
 
         NotificationCenter.mapRelated(1);
-        map.printMap();
 
         while (true) {
-            // Keep playing the game until the user chooses to quit or all heroes in the team have fainted
-            boolean shouldVisit = move();
-            map.printMap();
-
-            if (shouldVisit) {
-                // Prevent the visit of a cell when the player enters 'i/I' in the move() method
-                visit();
+            for (int i = 0; i < team.size(); ++i) {
                 map.printMap();
-            }
+                String action = getAction(i + 1);
 
-            map.recoverCell(row, col);
+
+                // If it is not a valid action, choose the action for the hero again.
+                // e.g. the hero chooses to move outside of the map or attack a monster who is out of range
+
+                // However, even if the action is valid, it may fail when being performed!
+                // e.g. the hero can always choose to use a potion, so isValidAction() is true.
+                // But the hero may not have any potion in her/his inventory, thus performAction() is false.
+                // Then we still need to loop again to choose another action for this hero
+                if (!isValidAction(action, i) || !performAction(action, i)) { --i; }
+            }
         }
     }
 
-    /*
-        Display welcome messages and relevant game instructions.
-        Get the desired number of heroes from the players (in order to form the heroes team).
-     */
     @Override
     public void prepare() {
         NotificationCenter.welcome();
+        NotificationCenter.showOperations();
         NotificationCenter.playOrQuit(1);
 
         Scanner sc = new Scanner(System.in);
@@ -80,32 +75,14 @@ public class LegendsGame extends RPGGame {
         } else {
             NotificationCenter.playOrQuit(3);
         }
-
-        // Get the desired heroes number
-        NotificationCenter.heroesInfo(1);
-        while (true) {
-            if (sc.hasNextInt()) {
-                numOfHeroes = sc.nextInt();
-
-                if (numOfHeroes < 1 || numOfHeroes > 3) { NotificationCenter.heroesInfo(2); }
-                else { break; }
-
-            } else {
-                sc.next();
-                NotificationCenter.heroesInfo(3);
-            }
-        }
     }
 
-    /*
-        Form the hero team (1/2/3 heroes).
-     */
     public void formHeroTeam() {
         Scanner sc = new Scanner(System.in);
         HeroTeam temp = new HeroTeam();
         HeroList.printHeroList();
 
-        for (int i = 1; i <= numOfHeroes; ++i) {
+        for (int i = 1; i <= 3; ++i) {
             // Get the user desired hero for every hero headcount
             NotificationCenter.formHeroTeam(1, i);
             int choice;
@@ -119,6 +96,13 @@ public class LegendsGame extends RPGGame {
                         NotificationCenter.formHeroTeam(2, i);
                     } else {
                         temp.addMembers(HeroList.getList().get(choice - 1));
+                        team = temp.getTeam();
+
+                        // Set the coordinate information of the hero
+                        team.get(i - 1).setRow(map.getSize() - 1);
+                        team.get(i - 1).setCol(3 * (i - 1));
+                        team.get(i - 1).setStartingCol(3 * (i - 1));
+                        team.get(i - 1).heroMarker = map.getMap()[map.getSize() - 1][3 * (i - 1)].leftMarker;
                         break;
                     }
                 } else {
@@ -126,26 +110,9 @@ public class LegendsGame extends RPGGame {
                     NotificationCenter.formHeroTeam(3, i);
                 }
             }
-
-            team = temp.getTeam();
         }
     }
 
-    /*
-        Initialize the resetHero ArrayList to contain exactly the same information as the initial team ArrayList.
-        This is for the purpose of resetting and updating the stats of the heroes (e.g. HP, mana) after the fight.
-     */
-    public void formResetHeroes() {
-        for (Hero hero : team) {
-            resetHeroes.add(new Hero(hero.name, hero.level, hero.mana,
-                    (int)hero.strength, (int)hero.dexterity, (int)hero.agility, hero.money, hero.exp));
-        }
-    }
-
-    /*
-        Override the printTeamMembers() method from the RPGGame class.
-        Print the stats of all the heroes in the team ArrayList.
-     */
     @Override
     public void printTeamMembers() {
         if (team.isEmpty()) { return; }
@@ -165,7 +132,7 @@ public class LegendsGame extends RPGGame {
 
         for (int i = 0; i < team.size(); ++i) {
             // Print all the team members together with their stats
-            name = (i + 1) + ". " + team.get(i).name;
+            name = "H" + (i + 1) + ". " + team.get(i).name;
             hp = team.get(i).hp;
             level = team.get(i).level;
             mana = team.get(i).mana;
@@ -182,24 +149,43 @@ public class LegendsGame extends RPGGame {
         System.out.println(splitLine);
     }
 
-    /*
-        Initialize the monster squad (same size as the hero team).
-     */
-    public void initializeMonsters() {
-        MonsterList list = new MonsterList();
-        Random seed = new Random();
-
-        for (int i = 0; i < team.size(); ++i) {
-            // This guarantees: number of heroes = number of monsters, and
-            // the monsters are randomly selected from the monster list
-            int monsterIndex = seed.nextInt(list.getMonsters().size());
-            monsters.add(list.getMonsters().get(monsterIndex));
+    public void formResetHeroes() {
+        for (Hero hero : team) {
+            resetHeroes.add(new Hero(hero.name, hero.level, hero.mana,
+                    (int)hero.strength, (int)hero.dexterity, (int)hero.agility, hero.money, hero.exp));
         }
     }
 
-    /*
-        Print the stats of all the monsters in the monster squad.
-     */
+    public void initializeMonsters() {
+        NotificationCenter.fight(1, "", "");
+
+        // The list of all monsters
+        List<Monster> monsterList = new MonsterList().getMonsters();
+
+        // The list of all monsters of the same level as a certain hero
+        List<Monster> sameLevelMonsters = new ArrayList<>();
+
+        Random seed = new Random();
+
+        for (int i = 0; i < team.size(); ++i) {
+            // For every hero in the hero team
+            for (int j = 0; j < monsterList.size(); ++j) {
+                // For every monster in the monster list
+                if (team.get(i).level == monsterList.get(j).level) {
+                    // If the monster has the same level as the current hero,
+                    // add it to [sameLevelMonsters]
+                    sameLevelMonsters.add(monsterList.get(j));
+                }
+            }
+
+            // Randomly pick a monster from [sameLevelMonsters] and add it into our monster squad
+            int monsterIndex = seed.nextInt(sameLevelMonsters.size());
+            monsters.add(sameLevelMonsters.get(monsterIndex));
+
+            sameLevelMonsters.clear();
+        }
+    }
+
     public void printMonsters() {
         if (monsters.isEmpty()) { return; }
 
@@ -218,7 +204,7 @@ public class LegendsGame extends RPGGame {
 
         for (int i = 0; i < monsters.size(); ++i) {
             // Print all the monsters together with their stats
-            name = (i + 1) + ". " + monsters.get(i).name;
+            name = "M" + (i + 1) + ". " + monsters.get(i).name;
             hp = monsters.get(i).hp;
             level = monsters.get(i).level;
             damage = monsters.get(i).damage;
@@ -231,115 +217,150 @@ public class LegendsGame extends RPGGame {
         System.out.println(splitLine);
     }
 
-    /*
-        Let the user travel in the map using wW/aA/sS/dD, and print information using iI.
-     */
-    public boolean move() {
+    public String getAction(int heroIndex) {
         Scanner sc = new Scanner(System.in);
         String action;
         int size = map.getSize();
 
         while (true) {
-            NotificationCenter.mapRelated(2);
+            NotificationCenter.askForAction(heroIndex); // Ask the player to choose an action
+            NotificationCenter.showOperations(); // Show the table of all operations
+            NotificationCenter.mapRelated(2); // Ask the player to enter the desired action
             action = sc.nextLine();
 
             if (!action.equalsIgnoreCase("W") && !action.equalsIgnoreCase("A") &&
                     !action.equalsIgnoreCase("S") && !action.equalsIgnoreCase("D") &&
-                    !action.equalsIgnoreCase("Q") && !action.equalsIgnoreCase("I")) {
+                    !action.equalsIgnoreCase("Q") && !action.equalsIgnoreCase("I") &&
+                    !action.equalsIgnoreCase("O") && !action.equalsIgnoreCase("P") &&
+                    !action.equalsIgnoreCase("F") && !action.equalsIgnoreCase("C") &&
+                    !action.equalsIgnoreCase("T") && !action.equalsIgnoreCase("B") &&
+                    !action.equalsIgnoreCase("V")) {
 
                 // Invalid input (i.e. not a/w/s/d/q/i)
                 NotificationCenter.mapRelated(3);
                 continue;
             }
 
-            if ((action.equalsIgnoreCase("A") && (col - 1 < 0)) ||
-                    (action.equalsIgnoreCase("D") && (col + 1 >= size)) ||
-                    (action.equalsIgnoreCase("W") && (row - 1 < 0)) ||
-                    (action.equalsIgnoreCase("S") && (row + 1 >= size))) {
+            // If the player enters i/I, print relevant stats and continue the loop.
+            // Because only i/I can be performed multiple times within a round
+            if (action.equalsIgnoreCase("I")) { printTeamMembers(); }
+            else { break; }
+        }
 
-                // Valid input, but cannot go outside of the map
-                NotificationCenter.mapRelated(4);
-                continue;
+        return action;
+    }
+
+    public boolean isValidAction(String action, int heroIndex) {
+        Hero h = team.get(heroIndex);
+        Cell[][] m = map.getMap();
+
+        if (action.equalsIgnoreCase("Q")) { return true; }
+
+        if ((action.equalsIgnoreCase("A") && (h.col - 1 < 0)) ||
+                (action.equalsIgnoreCase("D") && (h.col + 1 >= map.getSize())) ||
+                (action.equalsIgnoreCase("S") && (h.row + 1 >= map.getSize())) ||
+                (action.equalsIgnoreCase("W") && (h.row - 1 < 0))) {
+
+            // Cannot go outside of the map
+            NotificationCenter.mapRelated(4);
+            return false;
+        }
+
+        if (action.equalsIgnoreCase("A") && (m[h.row][h.col - 1] instanceof InaccessibleCell) ||
+                action.equalsIgnoreCase("D") && (m[h.row][h.col + 1] instanceof InaccessibleCell) ||
+                action.equalsIgnoreCase("S") && (m[h.row + 1][h.col] instanceof InaccessibleCell) ||
+                action.equalsIgnoreCase("W") && (m[h.row - 1][h.col] instanceof InaccessibleCell)) {
+            // Cannot move to an inaccessible cell
+            NotificationCenter.mapRelated(5);
+            return false;
+        }
+
+        if (action.equalsIgnoreCase("W") && h.row == monsters.get(heroIndex).row) {
+            // Cannot move behind a monster without killing it
+            NotificationCenter.mapRelated(6);
+            return false;
+        }
+
+        if (action.equalsIgnoreCase("A") && (!m[h.row][h.col - 1].leftMarker.equals("  ")) ||
+                action.equalsIgnoreCase("D") && (!m[h.row][h.col + 1].leftMarker.equals("  ")) ||
+                action.equalsIgnoreCase("S") && (!m[h.row + 1][h.col].leftMarker.equals("  ")) ||
+                action.equalsIgnoreCase("W") && (!m[h.row - 1][h.col].leftMarker.equals("  "))) {
+            // Cannot move to a cell that has already been taken by another hero
+            NotificationCenter.mapRelated(9);
+            return false;
+        }
+
+        if (action.equalsIgnoreCase("F") || action.equalsIgnoreCase("C")) {
+            if ((h.col + 1 < map.getSize() && !map.getMap()[h.row][h.col + 1].getHasMonsters()) ||
+                    (h.col - 1 >= 0 && !map.getMap()[h.row][h.col - 1].getHasMonsters()) ||
+                    (h.row - 1 >= 0 && !map.getMap()[h.row - 1][h.col].getHasMonsters()) ||
+                    (h.row - 1 >= 0 && h.col + 1 < map.getSize() && !map.getMap()[h.row - 1][h.col + 1].getHasMonsters()) ||
+                    (h.row - 1 >= 0 && h.col - 1 >= 0 && !map.getMap()[h.row - 1][h.col - 1].getHasMonsters()) ||
+                    (!map.getMap()[h.row][h.col].getHasMonsters())) {
+                // If no monsters in all the neighboring cells of the current hero, cannot attack or cast a spell
+                NotificationCenter.mapRelated(7);
+                return false;
             }
-
-            if ((action.equalsIgnoreCase("A") && (map.getMap()[row][col - 1] instanceof InaccessibleCell)) ||
-                    (action.equalsIgnoreCase("D") && (map.getMap()[row][col + 1] instanceof InaccessibleCell)) ||
-                    (action.equalsIgnoreCase("W") && (map.getMap()[row - 1][col] instanceof InaccessibleCell)) ||
-                    (action.equalsIgnoreCase("S") && (map.getMap()[row + 1][col] instanceof InaccessibleCell))) {
-
-                // Valid input, but cannot move to an Inaccessible Cell
-                NotificationCenter.mapRelated(5);
-            } else { break; }
         }
 
-        // Valid input, and legal move
-        int startRowPos = row, startColPos = col;
-
-        if (action.equalsIgnoreCase("A")) { --col; }
-        else if (action.equalsIgnoreCase("D")) { ++col; }
-        else if (action.equalsIgnoreCase("W")) { --row; }
-        else if (action.equalsIgnoreCase("S")) { ++row; }
-
-        if (startRowPos == 0 && startColPos == 0) {
-            // Special case: when the hero team leaves its starting cell.
-            // Detailed explanation is in the setCellZeroZero() method of the Map class.
-            map.setStartingCell();
-        }
-
-        map.setHeroCell(row, col); // Set the cell that the hero team moves to
-
-        if (action.equalsIgnoreCase("Q")) { quit(); } // Quit the game
-        if (action.equalsIgnoreCase("I")) {
-            // Print relevant stats
-            printTeamMembers();
+        if (action.equalsIgnoreCase("V") && (!(map.getMap()[h.row][h.col] instanceof HeroNexusCell))) {
+            // If the hero is not in the nexus, cannot visit the market'
+            NotificationCenter.mapRelated(8);
             return false;
         }
 
         return true;
     }
 
-    /*
-        After the hero moves to a specific cell, visit that cell.
-     */
-    public void visit() {
-        // If the cell is a Market cell, go and visit the market
-        if (map.getOriginalCell() instanceof MarketCell) { visitMarket(); }
+    public boolean performAction(String action, int heroIndex) {
+        if (action.equalsIgnoreCase("Q")) { quit(); }
 
-        // If the cell is a Common Space cell, flip a coin to decide if there is going to be a monster
-        if (map.getOriginalCell() instanceof CommonSpaceCell) {
-            Random seed = new Random();
-            int createMonster = seed.nextInt(2);
+        if (action.equalsIgnoreCase("V")) { visitMarket(heroIndex); }
 
-            // 50% chance to come across monsters and begin to fight
-            if (createMonster == 1) { fight(); }
-        }
+        if (action.equalsIgnoreCase("O")) { return team.get(heroIndex).changeAWeapon(); }
+
+        if (action.equalsIgnoreCase("P")) { return team.get(heroIndex).changeAnArmor(); }
+
+        if (action.equalsIgnoreCase("U")) { return team.get(heroIndex).useAPotion(); }
+
+        if (action.equalsIgnoreCase("B")) { team.get(heroIndex).backToNexus(map.getSize()); }
+
+        if (action.equalsIgnoreCase("T")) { return team.get(heroIndex).teleport(map); }
+
+        if (action.equalsIgnoreCase("W") ||
+                action.equalsIgnoreCase("A") ||
+                action.equalsIgnoreCase("S") ||
+                action.equalsIgnoreCase("D")) { heroMove(action, heroIndex); }
+
+
+
+
+        return true;
     }
 
-    /*
-        All possible operations when the hero team is visiting a market.
-     */
-    public void visitMarket() {
+    public void visitMarket(int heroIndex) {
         Scanner sc = new Scanner(System.in);
 
-        for (int i = 0; i < team.size(); ++i) {
-            // Iterate through all the heroes and ask for their actions (i.e. buy/sell/pass)
-            NotificationCenter.visitMarket(1, i + 1);
-            printTeamMembers();
-            NotificationCenter.visitMarket(2, i + 1);
+        NotificationCenter.visitMarket(1, heroIndex + 1);
 
-            int choice; // Get the hero's action choice
+        int choice; // Get the hero's action choice
 
+        while (true) {
             while (true) {
+                // Get the choice of the hero (i.e. buy/sell/pass)
+                printTeamMembers();
+                NotificationCenter.visitMarket(2, heroIndex + 1);
+
                 if (sc.hasNextInt()) {
                     choice = sc.nextInt();
 
                     // There are only 3 options for the hero (i.e. buy/sell/pass)
-                    if (choice < 1 || choice > 3) { NotificationCenter.visitMarket(3, i + 1); }
+                    if (choice < 1 || choice > 3) { NotificationCenter.visitMarket(3, heroIndex + 1); }
                     else { break; }
                 } else {
                     // If input is not an INTEGER
                     sc.next();
-                    NotificationCenter.visitMarket(4, i + 1);
+                    NotificationCenter.visitMarket(4, heroIndex + 1);
                 }
             }
 
@@ -348,37 +369,25 @@ public class LegendsGame extends RPGGame {
                 market.printMarket();
 
                 // Successfully bought the prop, print this hero's private inventory
-                if (team.get(i).buy(chooseAPropFromMarket())) { team.get(i).printInventory(); }
-
-                // Let the hero choose her/his option again (i.e. buy/sell/pass)
-                --i;
+                if (team.get(heroIndex).buy(chooseAPropFromMarket())) { team.get(heroIndex).printInventory(); }
             } else if (choice == 2) {
                 // The hero chooses to sell a prop
-                team.get(i).printInventory();
-                int propIndex = chooseAPropFromInventory(team.get(i));
+                team.get(heroIndex).printInventory();
+                int propIndex = chooseAPropFromInventory(team.get(heroIndex));
 
                 if (propIndex != Integer.MIN_VALUE) {
                     // Successfully sold the prop, print this hero's private inventory
-                    team.get(i).sell(propIndex);
-                    team.get(i).printInventory();
+                    team.get(heroIndex).sell(propIndex);
+                    team.get(heroIndex).printInventory();
                 }
-
-                // Let the hero choose her/his option again (i.e. buy/sell/pass),
-                // because the hero can buy/sell multiple times in the market
-                --i;
             } else {
-                // The hero chooses to pass
-                if (i == team.size() - 1) {
-                    // If it is the last hero, display the "Goodbye" message of the market
-                    NotificationCenter.marketMessages(6);
-                }
+                // The hero chooses to pass, break out the loop
+                NotificationCenter.marketMessages(6);
+                break;
             }
         }
     }
 
-    /*
-        A hero can choose her/his desired props from the market.
-     */
     public Prop chooseAPropFromMarket() {
         Scanner sc = new Scanner(System.in);
 
@@ -400,9 +409,6 @@ public class LegendsGame extends RPGGame {
         }
     }
 
-    /*
-        A hero can choose props from her/his private inventory.
-     */
     public int chooseAPropFromInventory(Hero hero) {
         if (hero.props.isEmpty()) {
             // The hero's inventory is empty
@@ -430,179 +436,37 @@ public class LegendsGame extends RPGGame {
         }
     }
 
-    /*
-        The hero team can fight the monster squad.
-     */
-    public void fight() {
-        Scanner sc = new Scanner(System.in);
+    public void heroMove(String action, int heroIndex) {
+        Hero h = team.get(heroIndex);
+        Cell[][] m = map.getMap();
 
-        NotificationCenter.fight(1, "", "");
+        // Set the left marker of the original cell to be "  "
+        m[h.row][h.col].leftMarker = "  ";
+        m[h.row][h.col].setMiddle();
 
-        initializeMonsters();
+        if (action.equalsIgnoreCase("W")) {
+            // Go forward
+            h.setRow(h.row - 1);
 
-        while (true) {
-            int hIndex = 0, mIndex = 0; // Index of the hero and index of the monster
+            // Calculate the lane of the hero after the move
+            int lane;
 
-            for (; hIndex < team.size() && mIndex < monsters.size(); ++hIndex) {
-                // The hero fights her/his corresponding monster
-                printTeamMembers();
-                printMonsters();
+            if (h.col <= 1) { lane = 0; }
+            else if (map.getSize() - h.col <= 2) { lane = 2; }
+            else { lane = 1; }
 
-                String heroName = team.get(hIndex).name;
-                String monsterName = monsters.get(mIndex).name;
-
-                NotificationCenter.fight(2, heroName, monsterName);
-                team.get(hIndex).printInventory();
-
-                int choice;
-
-                // Get the hero's action choice (i.e. attack/cast a spell/use a potion/change an armor/change a weapon)
-                while (true) {
-                    NotificationCenter.fight(3, heroName, "");
-
-                    if (sc.hasNextInt()) {
-                        choice = sc.nextInt();
-
-                        if (choice < 1 || choice > 5) {
-                            // Only 5 options available
-                            NotificationCenter.fight(4, "", "");
-                        } else { break; }
-                    } else {
-                        // Input is not an INTEGER
-                        sc.next();
-                        NotificationCenter.fight(5, "", "");
-                    }
-                }
-
-                if (!performAction(choice, team.get(hIndex), monsters.get(mIndex))) {
-                    // If failed to perform the action, let the hero choose the action again
-                    --hIndex;
-                    continue;
-                }
-
-                // Monster's turn to fight (if the monster is not dead already)
-                if (!monsters.get(mIndex).isDead()) {
-                    NotificationCenter.monsterAttack(2);
-                    monsters.get(mIndex).attack(team.get(hIndex));
-                }
-
-                // Fight until either the hero survives or the monster survives :)
-                if (team.get(hIndex).hasFainted() || monsters.get(mIndex).isDead()) {
-                    if (team.get(hIndex).hasFainted()) {
-                        faintedHeroes.add(team.remove(hIndex));
-                        --hIndex;
-                        ++mIndex;
-                    } else { monsters.remove(mIndex); }
-
-                    continue;
-                }
-
-                --hIndex; // If neither side is down, the hero needs to continue to fight
-            }
-
-            // If the fight has finished, break out of the loop
-            if (hasFightFinished()) { break; }
+            // Update the highest explored level of this lane
+            map.updateExploredLevel(lane);
         }
+        else if (action.equalsIgnoreCase("A")) { h.setCol(h.col - 1); }
+        else if (action.equalsIgnoreCase("S")) { h.setRow(h.row + 1); }
+        else if (action.equalsIgnoreCase("D")) { h.setCol(h.col + 1); }
 
-
+        // Update the left marker of the new cell to be the hero's marker (i.e. H1/H2/H3)
+        m[h.row][h.col].leftMarker = h.heroMarker;
+        m[h.row][h.col].setMiddle();
     }
 
-    /*
-        A hero can perform different actions during a round of the fight.
-     */
-    public boolean performAction(int choice, Hero hero, Monster monster) {
-        if (choice == 1) {
-            // Attack
-            hero.attack(monster);
-            return true;
-        }
-        else if (choice == 2) { return hero.castASpell(monster); } // Cast a spell
-        else if (choice == 3) { return hero.useAPotion(); } // Use a potion
-        else if (choice == 4) { return hero.changeAnArmor(); } // Change an armor
-        else { return hero.changeAWeapon(); } // Change a weapon
-    }
-
-    /*
-        Check if the fight has finished.
-     */
-    public boolean hasFightFinished() {
-        if (team.isEmpty() && monsters.isEmpty()) {
-            // All heroes have fainted, but all monsters are dead too. The whole game ends
-            // Literally speaking, this situation could not happen, but just in case ^
-            NotificationCenter.processStatus(3);
-            printTeamMembers();
-            quit();
-        } else if (team.isEmpty()) {
-            // All heroes have been fainted, and monsters still exist. The WHOLE GAME ends
-            // Notice that NO hero will be revived if ALL heroes are down after the fight!
-            NotificationCenter.processStatus(1);
-            printTeamMembers();
-            quit();
-        } else if (monsters.isEmpty()) {
-            // All monsters are dead, and heroes still exist. The hero team wins. The FIGHT ends
-            NotificationCenter.processStatus(2);
-            rewardAndReviveAfterFight();
-            printTeamMembers();
-        } else {
-            // There still exist at least one hero and one monster, the fight should continue
-            return false;
-        }
-
-        return true;
-    }
-
-    /*
-        Reward and revive the heroes after a fight.
-     */
-    public void rewardAndReviveAfterFight() {
-        NotificationCenter.reward(1);
-
-        for (Hero hero : team) {
-            for (Hero resetHero : resetHeroes) {
-                // For all heroes who are still ALIVE after the fight,
-                // set their HP and mana to be their initial values
-                if (hero.name.equalsIgnoreCase(resetHero.name)) {
-                    hero.hp = resetHero.hp;
-                    hero.mana = resetHero.mana;
-                    break;
-                }
-            }
-
-            // For all heroes who are still ALIVE after the fight, reward them with extra money and EXP
-            hero.money += 100 * hero.level;
-            hero.setExpBonus(5 * hero.level);
-
-            // If the hero is qualified to level up, let it.
-            // Otherwise the performLevelUp() method will just do nothing
-            hero.performLevelUp();
-        }
-
-        if (!team.isEmpty()) {
-            // If not all heroes have fainted, revive all fainted heroes (otherwise the game ends).
-            Iterator<Hero> iterator = faintedHeroes.iterator();
-
-            while (iterator.hasNext()) {
-                // Iterate through all fainted heroes in the faintedHeroes ArrayList
-                Hero hero = iterator.next();
-
-                for (Hero resetHero : resetHeroes) {
-                    // Revive all fainted heroes with half of their initial HP and mana, and no money or HP rewarded
-                    if (hero.name.equalsIgnoreCase(resetHero.name)) {
-                        hero.hp = resetHero.hp * 0.5;
-                        hero.mana = resetHero.mana * 0.5;
-                        break;
-                    }
-                }
-
-                team.add(hero); // Add the fainted hero back to the hero team (i.e. revive)
-                iterator.remove(); // Remove the fainted hero from faintedHeroes
-            }
-        }
-    }
-
-    /*
-        The user can quit the game.
-     */
     @Override
     public void quit() {
         printTeamMembers();
