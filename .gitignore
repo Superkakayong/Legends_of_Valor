@@ -8,3 +8,5 @@ part1/
 *.settings
 *.project
 *.log
+
+*.wav

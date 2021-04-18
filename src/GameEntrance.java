@@ -4,6 +4,13 @@
  */
 public class GameEntrance {
     public static void main(String[] args) {
-        new LegendsGame().play();
+        Runnable playSound = new Sound();
+        Runnable legends = new LegendsGame();
+
+        Thread thread1 = new Thread(playSound);
+        Thread thread2 = new Thread(legends);
+
+        thread1.start();
+        thread2.start();
     }
 }
