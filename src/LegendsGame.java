@@ -51,6 +51,10 @@ public class LegendsGame extends RPGGame{
                 // Then we still need to loop again to choose another action for this hero
                 if (!isValidAction(action, i) || !performAction(action, i)) { --i; }
             }
+
+            for (int i = 0; i < monsters.size(); ++i) {
+                monsterMove(i);
+            }
         }
     }
 
@@ -337,13 +341,14 @@ public class LegendsGame extends RPGGame{
                 action.equalsIgnoreCase("D")) { heroMove(action, heroIndex); }
 
         if (action.equalsIgnoreCase("F")) {
-            team.get(heroIndex).attack(chooseAMonster(heroIndex));
+            team.get(heroIndex).attack(assignAMonster(heroIndex));
             printMonsters();
         }
 
         if (action.equalsIgnoreCase("C")) {
-            boolean hasSucceeded = team.get(heroIndex).castASpell(chooseAMonster(heroIndex));
+            boolean hasSucceeded = team.get(heroIndex).castASpell(assignAMonster(heroIndex));
             printMonsters();
+
             return hasSucceeded;
         }
 
@@ -479,8 +484,29 @@ public class LegendsGame extends RPGGame{
         m[h.row][h.col].setMiddle();
     }
 
-    public Monster chooseAMonster(int heroIndex) {
-        // We automatically choose a neighboring monster that has the lowest HP for the hero
+    public void monsterMove(int monsterIndex) {
+        Monster monster = monsters.get(monsterIndex);
+        Cell[][] m = map.getMap();
+
+        // Set the right marker of the original cell to be "  "
+        m[monster.row][monster.col].rightMarker = "  ";
+        m[monster.row][monster.col].setMiddle();
+
+        // Since the monster is leaving this cell, the cell should be set to "no monsters" status
+        m[monster.row][monster.col].setHasMonsters(false);
+
+        monster.setRow(monster.row + 1); // Go down (i.e. towards the hero nexus)
+
+        // Update the right marker of the new cell to be the monster's marker (i.e. M1/M2/M3)
+        m[monster.row][monster.col].rightMarker = monster.monsterMarker;
+        m[monster.row][monster.col].setMiddle();
+
+        // Since the monster is in the new cell, the cell should be set to "has monsters" status
+        m[monster.row][monster.col].setHasMonsters(true);
+    }
+
+    public Monster assignAMonster(int heroIndex) {
+        // We automatically assign a neighboring monster that has the lowest HP to the hero
         NotificationCenter.chooseAMonster();
 
         Hero h = team.get(heroIndex);
