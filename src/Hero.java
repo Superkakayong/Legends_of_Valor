@@ -182,10 +182,17 @@ public class Hero extends Role implements Fight{
     /*
         Overload the attack() method above.
      */
-    public void attack(Monster monster) {
+    public void attack(Monster monster, Map map) {
         // Get the monster's information
         String monsterName = monster.name;
         double monsterDodgeChance = monster.dodgeChance;
+        double strength = this.strength;
+
+        Cell[][] m = map.getMap();
+
+        // Koulou cells buff the strength of any hero who is inside them by 10%
+        if (m[row][col] instanceof KoulouCell) { strength *= 1.1; }
+
 
         // Calculate the total damage that the hero can inflict to the monster
 //        equippedWeapon = chooseWeapon();
@@ -300,12 +307,18 @@ public class Hero extends Role implements Fight{
     /*
         A hero can cast a spell to the monster.
      */
-    public boolean castASpell(Monster monster) {
+    public boolean castASpell(Monster monster, Map map) {
         // Get the monster's information
         String monsterName = monster.name;
         double monsterDodgeChance = monster.dodgeChance;
+        double dexterity = this.dexterity;
 
         Spell s = chooseSpell();
+
+        Cell[][] m = map.getMap();
+
+        // Bush cells increase the dexterity of any hero who is inside them by 10%.
+        if (m[row][col] instanceof BushCell) { dexterity *= 1.1; }
 
         // If failed to choose a spell (may due to the spell inventory is empty), return false
         if (s == null) { return false; }
@@ -665,6 +678,9 @@ public class Hero extends Role implements Fight{
             m.getMap()[row][col].leftMarker = "  ";
             m.getMap()[row][col].setMiddle();
 
+            // Since the hero is leaving this cell, the cell should be set to "no heroes" status
+            m.getMap()[row][col].setHasHeroes(false);
+
             // Update the new row and column values for the hero
             setRow(newRow);
             setCol(newCol);
@@ -672,6 +688,9 @@ public class Hero extends Role implements Fight{
             // Set the left marker of the new cell to be the current hero's marker
             m.getMap()[row][col].leftMarker = heroMarker;
             m.getMap()[row][col].setMiddle();
+
+            // Since the hero is in the new cell, the cell should be set to "has heroes" status
+            m.getMap()[row][col].setHasHeroes(true);
 
             return true;
         }

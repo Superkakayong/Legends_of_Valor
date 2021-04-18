@@ -115,9 +115,4 @@ public class Map {
             System.out.println();
         }
     }
-
-//    public static void main(String[] args) {
-//        Map m = new Map(8);
-//        m.printMap();
-//    }
 }

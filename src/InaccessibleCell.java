@@ -1,5 +1,6 @@
 public class InaccessibleCell extends Cell {
     public InaccessibleCell() {
-        super("X ", " X", "I");
+        super(Colors.RED + "X " + Colors.RESET, Colors.RED + " X" + Colors.RESET,
+                Colors.RED + "I" + Colors.RESET);
     }
 }

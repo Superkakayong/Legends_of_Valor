@@ -15,6 +15,7 @@ public class LegendsGame extends RPGGame{
     private Market market; // The market in the market cell
     private Role deadRole; // The current dead role (hero/monster)
 
+    private int numOfRounds; // The number of rounds
     private boolean isHeroDead;
     private boolean isMonsterDead;
     private boolean heroReachesMonsterNexus;
@@ -30,6 +31,7 @@ public class LegendsGame extends RPGGame{
         market = new Market();
         deadRole = null;
 
+        numOfRounds = 0;
         isHeroDead = false;
         isMonsterDead = false;
         heroReachesMonsterNexus = false;
@@ -48,11 +50,20 @@ public class LegendsGame extends RPGGame{
         NotificationCenter.mapRelated(1);
 
         while (true) {
+            if (numOfRounds == 8) {
+                NotificationCenter.spawnNewMonsters();
+                initializeMonsters();
+                printMonsters();
+
+                numOfRounds = 0; // Reset to 0
+            }
+
             for (int i = 0; i < team.size(); ++i) {
                 map.printMap();
                 printTeamMembers();
-                String action = getAction(i); // Get the action for the current hero (i.e. w/s/d/...)
+                printMonsters();
 
+                String action = getAction(i); // Get the action for the current hero (i.e. w/s/d/...)
 
                 // If it is not a valid action, choose the action for the hero again.
                 // e.g. the hero chooses to move outside of the map or attack a monster who is out of range
@@ -70,11 +81,21 @@ public class LegendsGame extends RPGGame{
                 else { monsterMove(i); } // Otherwise, just move one step forward towards the hero nexus
             }
 
-            if (!hasFightFinished() && isHeroDead && deadRole != null) {
-                respawn((Hero) deadRole);
+            ++numOfRounds; // A round finished
 
-                isHeroDead = false;
-                deadRole = null;
+            if (!hasFightFinished() && !faintedHeroes.isEmpty()) {
+                /* If:
+                   1. the fight is not finished (i.e. no one reaches any nexuses);
+                   2. and there is at least one hero dead,
+
+                   respawn the hero.
+                 */
+                respawn();
+                sortHeroTeam();
+
+//                // Reset relevant variables
+//                isHeroDead = false;
+//                deadRole = null;
             }
         }
     }
@@ -209,10 +230,21 @@ public class LegendsGame extends RPGGame{
             int monsterIndex = seed.nextInt(sameLevelMonsters.size());
             monsters.add(sameLevelMonsters.get(monsterIndex));
 
+            int size = monsters.size();
+
             // Set the coordinate information of the monster
-            monsters.get(i).setRow(0);
-            monsters.get(i).setCol(3 * i);
-            monsters.get(i).monsterMarker = map.getMap()[0][3 * i].rightMarker;
+            monsters.get(size - 1).setRow(0);
+            monsters.get(size - 1).setCol(3 * i);
+
+            if (map.getMap()[0][3 * i].rightMarker.equals("  ")) {
+                // If the monster is created after 8 rounds, the rightMarker needs to be manually set to Mx
+                map.getMap()[0][3 * i].rightMarker = "M" + size;
+                map.getMap()[0][3 * i].setMiddle();
+            }
+            monsters.get(size - 1).monsterMarker = map.getMap()[0][3 * i].rightMarker;
+
+            // Set the current cell to be "has monsters" status
+            map.getMap()[monsters.get(size - 1).row][monsters.get(size - 1).col].setHasMonsters(true);
 
             sameLevelMonsters.clear();
         }
@@ -236,8 +268,8 @@ public class LegendsGame extends RPGGame{
 
         for (int i = 0; i < monsters.size(); ++i) {
             // Print all the monsters together with their statss
-//            name = "M" + (i + 1) + ". " + monsters.get(i).name;
-            name = map.getMap()[monsters.get(i).row][monsters.get(i).col].leftMarker + ". " + monsters.get(i).name;
+            name = "M" + (i + 1) + ". " + monsters.get(i).name;
+//            name = map.getMap()[monsters.get(i).row][monsters.get(i).col].rightMarker + ". " + monsters.get(i).name;
             hp = monsters.get(i).hp;
             level = monsters.get(i).level;
             damage = monsters.get(i).damage;
@@ -267,16 +299,17 @@ public class LegendsGame extends RPGGame{
                     !action.equalsIgnoreCase("O") && !action.equalsIgnoreCase("P") &&
                     !action.equalsIgnoreCase("F") && !action.equalsIgnoreCase("C") &&
                     !action.equalsIgnoreCase("T") && !action.equalsIgnoreCase("B") &&
-                    !action.equalsIgnoreCase("V")) {
+                    !action.equalsIgnoreCase("V") && !action.equalsIgnoreCase("M")) {
 
                 // Invalid input (i.e. not a/w/s/d/q/i)
                 NotificationCenter.mapRelated(3);
                 continue;
             }
 
-            // If the player enters i/I, print relevant stats and continue the loop.
-            // Because only i/I can be performed multiple times within a round
+            // If the player enters i/I or m/M, print relevant stats and continue the loop.
+            // Because only i/I and m/M can be performed multiple times within a round
             if (action.equalsIgnoreCase("I")) { printTeamMembers(); }
+            else if (action.equalsIgnoreCase("M")) { team.get(heroIndex).printInventory(); }
             else { break; }
         }
 
@@ -308,10 +341,16 @@ public class LegendsGame extends RPGGame{
             return false;
         }
 
-        if (action.equalsIgnoreCase("W") && h.row == monsters.get(heroIndex).row) {
+        if (action.equalsIgnoreCase("W")) {
             // Cannot move behind a monster without killing it
-            NotificationCenter.mapRelated(6);
-            return false;
+            // i.e. if a monster is in the hero's cell / on the hero's left / on the hero's right, cannot move forward
+
+            if ((m[h.row][h.col].hasMonsters) ||
+                    (h.col - 1 >= 0 && m[h.row][h.col - 1].hasMonsters) ||
+                    (h.col + 1 < map.getSize() && m[h.row][h.col + 1].hasMonsters)) {
+                NotificationCenter.mapRelated(6);
+                return false;
+            }
         }
 
         if (action.equalsIgnoreCase("A") && (!m[h.row][h.col - 1].leftMarker.equals("  ")) ||
@@ -342,7 +381,7 @@ public class LegendsGame extends RPGGame{
         }
 
         if (action.equalsIgnoreCase("V") && (!(map.getMap()[h.row][h.col] instanceof HeroNexusCell))) {
-            // If the hero is not in the nexus, cannot visit the market'
+            // If the hero is not in the nexus, cannot visit the market
             NotificationCenter.mapRelated(8);
             return false;
         }
@@ -372,7 +411,7 @@ public class LegendsGame extends RPGGame{
 
         if (action.equalsIgnoreCase("F")) {
             Monster m = assignAMonster(heroIndex);
-            team.get(heroIndex).attack(m);
+            team.get(heroIndex).attack(m, map);
 
             processResults(m);
             printMonsters();
@@ -380,7 +419,7 @@ public class LegendsGame extends RPGGame{
 
         if (action.equalsIgnoreCase("C")) {
             Monster m = assignAMonster(heroIndex);
-            boolean hasSucceeded = team.get(heroIndex).castASpell(m);
+            boolean hasSucceeded = team.get(heroIndex).castASpell(m, map);
 
             processResults(m);
             printMonsters();
@@ -583,6 +622,17 @@ public class LegendsGame extends RPGGame{
 
         if (monster.isDead()) { return false; }
 
+        if (monster.row + 1 == size - 1) {
+            // If the monster is 1 step away from the hero nexus
+            if (!((monster.col + 1 < size && m[monster.row][monster.col + 1].hasHeroes) || // Right
+                    (monster.col - 1 >= 0 && m[monster.row][monster.col - 1].hasHeroes) || // Left
+                    (m[monster.row][monster.col].hasHeroes))) { // Monster's own cell
+                // If there is no heroes on the monster's left or right side nor in the monster's own cell,
+                // the monster should move forward to the hero nexus rather than attack!
+                return false;
+            }
+        }
+
         // Check if there is a neighboring hero of the current monster
         return (monster.col + 1 < size && m[monster.row][monster.col + 1].hasHeroes) || // Right
 
@@ -596,7 +646,7 @@ public class LegendsGame extends RPGGame{
                 (monster.row + 1 < size && monster.col - 1 >= 0 &&
                         m[monster.row + 1][monster.col - 1].hasHeroes) || // Lower left
 
-                (m[monster.row][monster.col].hasHeroes);
+                (m[monster.row][monster.col].hasHeroes); // Monster's own cell
     }
 
     private void monsterAttack(int monsterIndex) {
@@ -605,7 +655,7 @@ public class LegendsGame extends RPGGame{
 
         NotificationCenter.monsterAttack(2, m.monsterMarker, target.heroMarker);
 
-        m.attack(target);
+        m.attack(target, map);
 
         processResults(target);
         printTeamMembers();
@@ -665,6 +715,7 @@ public class LegendsGame extends RPGGame{
                 h.performLevelUp();
 
                 // The survived hero will regain 10% of their hp and mana after each round
+                // (i.e. at the start of the next round)
                 h.hp *= 1.1;
                 h.mana *= 1.1;
             }
@@ -674,6 +725,9 @@ public class LegendsGame extends RPGGame{
             m = (Monster) role;
 
             if (m.isDead()) {
+                // Remove the dead monster from the monster squad
+                monsters.remove(m);
+
                 // Set the right marker of the monster's cell to be "  "
                 map.getMap()[m.row][m.col].rightMarker = "  ";
                 map.getMap()[m.row][m.col].setMiddle();
@@ -687,33 +741,50 @@ public class LegendsGame extends RPGGame{
         }
     }
 
-    private void respawn(Hero deadHero) {
-        int deadHeroIndex = 0; // The position (i.e. index) of the dead hero in the hero team
+    private void respawn() {
+        Iterator<Hero> iterator = faintedHeroes.iterator();
 
-        for (Hero temp : resetHeroes) {
-            if (deadHero.name.equalsIgnoreCase(temp.name)) {
-                deadHero.hp = temp.hp * 0.5;
-                deadHero.mana = temp.mana * 0.5;
+        while (iterator.hasNext()) {
+            // Iterate through all fainted heroes in the faintedHeroes ArrayList
+            Hero hero = iterator.next();
 
-                deadHero.setRow(map.getSize() - 1);
-                deadHero.setCol(deadHero.startingCol);
-
-                // Add the dead hero back to the hero team (i.e. respawn)
-                team.add(deadHeroIndex, deadHero);
-                faintedHeroes.remove(deadHero);
-
-                // Set the left marker of the hero's cell to be the hero's marker
-                map.getMap()[deadHero.row][deadHero.col].leftMarker = deadHero.heroMarker;
-                map.getMap()[deadHero.row][deadHero.col].setMiddle();
-
-                // Set the cell to "has heroes" status
-                map.getMap()[deadHero.row][deadHero.startingCol].setHasHeroes(true);
-
-                break;
+            for (Hero resetHero : resetHeroes) {
+                // Respawn all dead heroes with half of their initial HP and mana
+                if (hero.name.equalsIgnoreCase(resetHero.name)) {
+                    hero.hp = resetHero.hp * 0.5;
+                    hero.mana = resetHero.mana * 0.5;
+                    break;
+                }
             }
 
-            ++deadHeroIndex;
+            // Set its coordinates to be its starting coordinates
+            hero.setRow(map.getSize() - 1);
+            hero.setCol(hero.startingCol);
+
+            team.add(hero); // Add the dead hero back to the hero team (i.e. respawn)
+            iterator.remove(); // Remove the fainted hero from [faintedHeroes]
+
+            // Set the left marker of the hero's cell to be the hero's marker
+            map.getMap()[hero.row][hero.col].leftMarker = hero.heroMarker;
+            map.getMap()[hero.row][hero.col].setMiddle();
+
+            // Set the cell to "has heroes" status
+            map.getMap()[hero.row][hero.startingCol].setHasHeroes(true);
         }
+    }
+
+    private void sortHeroTeam() {
+        Collections.sort(team, new Comparator<Hero>() {
+            @Override
+            public int compare(Hero h1, Hero h2) {
+                // If h1's heroMarker is "H1", h2's heroMarker is "H2",
+                // then in the list of the hero team, h1 should appear before h2
+                int index1 = Character.getNumericValue(h1.heroMarker.charAt(1));
+                int index2 = Character.getNumericValue(h2.heroMarker.charAt(1));
+
+                return index1 - index2;
+            }
+        });
     }
 
     public boolean hasFightFinished() {
@@ -721,34 +792,29 @@ public class LegendsGame extends RPGGame{
             // All heroes have fainted, but all monsters are dead too. The WHOLE GAME ends.
             // Literally speaking, this situation could not happen, but just in case ^
             NotificationCenter.processStatus(3);
-            printTeamMembers();
             quit();
         } else if (team.isEmpty()) {
             // All heroes have been fainted, and monsters still exist. The WHOLE GAME ends.
             // Notice that NO hero will be revived if ALL heroes are down after the fight!
             NotificationCenter.processStatus(1);
-            printTeamMembers();
             quit();
         } else if (heroReachesMonsterNexus && !monsterReachesHeroNexus) {
             // Hero team reaches the monster nexus first. Heroes win the game.
             // The WHOLE GAME ends
             NotificationCenter.processStatus(2);
             map.printMap();
-            printTeamMembers();
             quit();
         } else if (monsterReachesHeroNexus && !heroReachesMonsterNexus) {
             // Monster squad reaches the hero nexus first. Monsters win the game.
             // The WHOLE GAME ends
             NotificationCenter.processStatus(4);
             map.printMap();
-            printTeamMembers();
             quit();
         } else if (heroReachesMonsterNexus && monsterReachesHeroNexus) {
             // Both sides reach the opponent's nexus at the same time. TIE.
             // The WHOLE GAME ends
             NotificationCenter.processStatus(5);
             map.printMap();
-            printTeamMembers();
             quit();
         } else {
             // The game still needs to be continued

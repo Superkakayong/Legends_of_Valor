@@ -154,7 +154,14 @@ public final class NotificationCenter {
         System.out.print(Colors.RED + "V/v" + Colors.RESET);
         System.out.println(": Visit the Market ");
 
+        System.out.print(Colors.RED + "M/m" + Colors.RESET);
+        System.out.println(": Show hero's inventory ");
+
         System.out.println(Colors.YELLOW + "-------------------------------------------" + Colors.RESET);
+    }
+
+    public static void spawnNewMonsters() {
+        System.out.println(Colors.RED + "Eight rounds passed! Three new monsters have spawned!" + Colors.RESET);
     }
 
     /*
@@ -268,7 +275,7 @@ public final class NotificationCenter {
                 System.out.println("Please enter your action (w/a/s/d/q/i/o/p/f/c/t/b/v): ");
                 break;
             case 3:
-                System.out.println("Invalid input! Must be one of [w/a/s/d/q/i/o/p/f/c/t/b/v]!");
+                System.out.println("Invalid input! Must be one of [w/a/s/d/q/i/o/p/f/c/t/b/v/m]!");
                 System.out.println();
                 break;
             case 4:
@@ -281,15 +288,19 @@ public final class NotificationCenter {
                 break;
             case 6:
                 System.out.println("Cannot move behind a monster without killing it!");
+                System.out.println();
                 break;
             case 7:
                 System.out.println("Invalid action! The monster is out of your range!");
+                System.out.println();
                 break;
             case 8:
                 System.out.println("You are not in the nexus! Cannot visit the market!");
+                System.out.println();
                 break;
             case 9:
                 System.out.println("Cannot move to a cell that has already been taken!");
+                System.out.println();
                 break;
         }
     }
@@ -597,7 +608,6 @@ public final class NotificationCenter {
             case 1:
                 System.out.println(Colors.PURPLE_BG + Colors.BLACK +" The Monster Squad: " + Colors.RESET);
                 break;
-
         }
     }
 
@@ -607,7 +617,7 @@ public final class NotificationCenter {
             case 1:
                 System.out.println(monster);
                 System.out.println(Colors.RED + "Attention!" + Colors.RESET);
-                System.out.println("You have confronted 3 monsters whose levels are EQUAL as your heroes'!");
+                System.out.println("You have confronted 3 monsters whose levels are EQUAL as your heroes!");
                 System.out.println("Heroes, prepare to FIGHT!");
                 System.out.println();
                 break;
@@ -649,9 +659,11 @@ public final class NotificationCenter {
                 break;
             case 2:
                 System.out.println(Colors.BLUE_BG + Colors.YELLOW + " Congratulations! " + Colors.RESET);
-                System.out.println("Heroes have reached the monster nexus first! Hero team has won the game!");
+                System.out.println("The hero team has reached the monster nexus first! Hero team has won the game!");
                 System.out.println();
                 System.out.println(win);
+                System.out.println();
+                System.out.println(reward);
                 System.out.println();
                 break;
             case 3:
@@ -661,7 +673,7 @@ public final class NotificationCenter {
             case 4:
                 System.out.println(lose);
                 System.out.println();
-                System.out.println(Colors.RED + "Unfortunately, monsters have reached the hero nexus first!" +
+                System.out.println(Colors.RED + "Unfortunately, the monster squad has reached the hero nexus first!" +
                         " Monsters have won the game!"
                         + Colors.RESET);
                 System.out.println();
@@ -698,6 +710,7 @@ public final class NotificationCenter {
                 break;
             case 2:
                 System.out.println("Cannot go outside of the map!");
+                System.out.println();
                 break;
             case 3:
                 System.out.println("Invalid input! Must be an Integer!");
@@ -722,9 +735,11 @@ public final class NotificationCenter {
                 break;
             case 9:
                 System.out.println(Colors.BLUE_BG + Colors.BLACK + " Teleport Successfully! " + Colors.RESET);
+                System.out.println();
                 break;
             case 10:
                 System.out.println("Cannot teleport to this cell since it has already been taken by another hero!");
+                System.out.println();
                 break;
         }
     }

@@ -42,7 +42,8 @@ public class Cell {
 
     public void setMiddle() {
         this.middle = new StringBuilder();
-        middle.append("| ").append(leftMarker).append("•").append(rightMarker).append(" |");
+        middle.append(Colors.WHITE + "| " + Colors.RESET).append(Colors.PURPLE + leftMarker + Colors.RESET).append("•").
+                append(Colors.PURPLE + rightMarker + Colors.RESET).append(Colors.WHITE + " |" + Colors.RESET);
     }
 
     public void setHasMonsters(boolean hasMonsters) {
