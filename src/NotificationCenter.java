@@ -548,6 +548,12 @@ public final class NotificationCenter {
         }
     }
 
+    public static void chooseAMonster() {
+        System.out.println("Now the game will AUTOMATICALLY choose a neighboring monster that has the lowest HP for you!");
+        System.out.println("If there is ONLY ONE neighboring monster, then it is the ONE!");
+        System.out.println();
+    }
+
     // Messages when choosing a prop.
     public static void chooseAProp(int index) {
         switch (index) {

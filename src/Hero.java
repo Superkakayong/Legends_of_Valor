@@ -590,9 +590,18 @@ public class Hero extends Role implements Fight{
         return true;
     }
 
-    public void backToNexus(int mapSize) {
-        setRow(mapSize - 1);
+    public void backToNexus(Map m) {
+        // Set the left marker of the original cell to be "  "
+        m.getMap()[row][col].leftMarker = "  ";
+        m.getMap()[row][col].setMiddle();
+
+        // Update the new row and column values for the hero
+        setRow(m.getSize() - 1);
         setCol(startingCol);
+
+        // Set the left marker of the new cell to be the current hero's marker
+        m.getMap()[row][col].leftMarker = heroMarker;
+        m.getMap()[row][col].setMiddle();
     }
 
     public boolean teleport(Map m) {
@@ -660,7 +669,7 @@ public class Hero extends Role implements Fight{
             setRow(newRow);
             setCol(newCol);
 
-            // Set the left marker of the original cell to be the current hero's marker
+            // Set the left marker of the new cell to be the current hero's marker
             m.getMap()[row][col].leftMarker = heroMarker;
             m.getMap()[row][col].setMiddle();
 

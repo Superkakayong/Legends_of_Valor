@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * This is the main class of the project!
@@ -29,10 +26,6 @@ public class LegendsGame extends RPGGame{
 
     @Override
     public void play() {
-//        map.printMap();
-//        map.getMap()[7][0].leftMarker = "qq";
-//        map.getMap()[7][0].setMiddle();
-//        map.printMap();
         prepare();
         formHeroTeam();
         printTeamMembers();
@@ -45,6 +38,7 @@ public class LegendsGame extends RPGGame{
         while (true) {
             for (int i = 0; i < team.size(); ++i) {
                 map.printMap();
+                printTeamMembers();
                 String action = getAction(i + 1);
 
 
@@ -182,6 +176,11 @@ public class LegendsGame extends RPGGame{
             int monsterIndex = seed.nextInt(sameLevelMonsters.size());
             monsters.add(sameLevelMonsters.get(monsterIndex));
 
+            // Set the coordinate information of the monster
+            monsters.get(i).setRow(0);
+            monsters.get(i).setCol(3 * i);
+            monsters.get(i).monsterMarker = map.getMap()[0][3 * i].rightMarker;
+
             sameLevelMonsters.clear();
         }
     }
@@ -291,12 +290,17 @@ public class LegendsGame extends RPGGame{
         }
 
         if (action.equalsIgnoreCase("F") || action.equalsIgnoreCase("C")) {
-            if ((h.col + 1 < map.getSize() && !map.getMap()[h.row][h.col + 1].getHasMonsters()) ||
-                    (h.col - 1 >= 0 && !map.getMap()[h.row][h.col - 1].getHasMonsters()) ||
-                    (h.row - 1 >= 0 && !map.getMap()[h.row - 1][h.col].getHasMonsters()) ||
-                    (h.row - 1 >= 0 && h.col + 1 < map.getSize() && !map.getMap()[h.row - 1][h.col + 1].getHasMonsters()) ||
-                    (h.row - 1 >= 0 && h.col - 1 >= 0 && !map.getMap()[h.row - 1][h.col - 1].getHasMonsters()) ||
-                    (!map.getMap()[h.row][h.col].getHasMonsters())) {
+            int size = map.getSize();
+
+            if ((h.col + 1 < size && m[h.row][h.col + 1].hasMonsters) || // Right
+                    (h.col - 1 >= 0 && m[h.row][h.col - 1].hasMonsters) || // Left
+                    (h.row - 1 >= 0 && m[h.row - 1][h.col].hasMonsters) || // Up
+                    (h.row - 1 >= 0 && h.col + 1 < size && m[h.row - 1][h.col + 1].hasMonsters) || // Top right
+                    (h.row - 1 >= 0 && h.col - 1 >= 0 && m[h.row - 1][h.col - 1].hasMonsters) || // Top left
+                    (m[h.row][h.col].hasMonsters)) {
+                // If at least one neighboring cell has a monster, return true
+                return true;
+            } else {
                 // If no monsters in all the neighboring cells of the current hero, cannot attack or cast a spell
                 NotificationCenter.mapRelated(7);
                 return false;
@@ -323,7 +327,7 @@ public class LegendsGame extends RPGGame{
 
         if (action.equalsIgnoreCase("U")) { return team.get(heroIndex).useAPotion(); }
 
-        if (action.equalsIgnoreCase("B")) { team.get(heroIndex).backToNexus(map.getSize()); }
+        if (action.equalsIgnoreCase("B")) { team.get(heroIndex).backToNexus(map); }
 
         if (action.equalsIgnoreCase("T")) { return team.get(heroIndex).teleport(map); }
 
@@ -332,8 +336,16 @@ public class LegendsGame extends RPGGame{
                 action.equalsIgnoreCase("S") ||
                 action.equalsIgnoreCase("D")) { heroMove(action, heroIndex); }
 
+        if (action.equalsIgnoreCase("F")) {
+            team.get(heroIndex).attack(chooseAMonster(heroIndex));
+            printMonsters();
+        }
 
-
+        if (action.equalsIgnoreCase("C")) {
+            boolean hasSucceeded = team.get(heroIndex).castASpell(chooseAMonster(heroIndex));
+            printMonsters();
+            return hasSucceeded;
+        }
 
         return true;
     }
@@ -445,7 +457,7 @@ public class LegendsGame extends RPGGame{
         m[h.row][h.col].setMiddle();
 
         if (action.equalsIgnoreCase("W")) {
-            // Go forward
+            // Go up
             h.setRow(h.row - 1);
 
             // Calculate the lane of the hero after the move
@@ -458,13 +470,36 @@ public class LegendsGame extends RPGGame{
             // Update the highest explored level of this lane
             map.updateExploredLevel(lane);
         }
-        else if (action.equalsIgnoreCase("A")) { h.setCol(h.col - 1); }
-        else if (action.equalsIgnoreCase("S")) { h.setRow(h.row + 1); }
-        else if (action.equalsIgnoreCase("D")) { h.setCol(h.col + 1); }
+        else if (action.equalsIgnoreCase("A")) { h.setCol(h.col - 1); } // Go left
+        else if (action.equalsIgnoreCase("S")) { h.setRow(h.row + 1); } // Go down
+        else if (action.equalsIgnoreCase("D")) { h.setCol(h.col + 1); } // Go right
 
         // Update the left marker of the new cell to be the hero's marker (i.e. H1/H2/H3)
         m[h.row][h.col].leftMarker = h.heroMarker;
         m[h.row][h.col].setMiddle();
+    }
+
+    public Monster chooseAMonster(int heroIndex) {
+        // We automatically choose a neighboring monster that has the lowest HP for the hero
+        NotificationCenter.chooseAMonster();
+
+        Hero h = team.get(heroIndex);
+        Monster res = null;
+
+        double minHp = Double.MAX_VALUE;
+
+        for (Monster temp : monsters) {
+            // The square of the distance between the hero and the current monster
+            double distance = Math.pow(h.row - temp.row, 2) + Math.pow(h.col - temp.col, 2);
+
+            if (distance <= 2 && temp.hp < minHp) {
+                // If the current monster is in a neighboring cell of the hero, and it has a lower HP, update [res]
+                minHp = temp.hp;
+                res = temp;
+            }
+        }
+
+        return res;
     }
 
     @Override

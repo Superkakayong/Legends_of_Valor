@@ -7,6 +7,7 @@ public class Monster extends Role implements Fight{
     protected double damage;
     protected double defenseStat;
     protected double dodgeChance;
+    protected String monsterMarker;
 
     public Monster() {}
 

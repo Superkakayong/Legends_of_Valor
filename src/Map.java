@@ -52,6 +52,7 @@ public class Map {
                 if (i == 0 && map[i][j] == null) {
                     if (j % 3 == 0) {
                         map[i][j] = new MonsterNexusCell("  ", monsterMarker);
+                        map[i][j].setHasMonsters(true);
                         ++monsterIndex;
                     }
                     else { map[i][j] = new MonsterNexusCell("  ", "  "); }
