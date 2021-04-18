@@ -19,7 +19,7 @@ public class Sound {
         DataLine.Info info;
         try {
             System.out.println("Start");
-            file = new File("/Users/xiongxinzeng/Downloads/demo.wav");
+            file = new File("hdewig's theme.wav");
             audio = AudioSystem.getAudioInputStream(file);
             format = audio.getFormat();
             info = new DataLine.Info(SourceDataLine.class, format);
