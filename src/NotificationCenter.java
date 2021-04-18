@@ -249,9 +249,9 @@ public final class NotificationCenter {
     /*
         Ask which action does the player want to choose from the table of all operations.
      */
-    public static void askForAction(int hero) {
+    public static void askForAction(String hero) {
         System.out.println("Which action would you like to perform for " +
-                Colors.RED + "H" + hero + Colors.RESET + "?");
+                Colors.RED + hero + Colors.RESET + "?");
     }
 
     /*
@@ -649,13 +649,26 @@ public final class NotificationCenter {
                 break;
             case 2:
                 System.out.println(Colors.BLUE_BG + Colors.YELLOW + " Congratulations! " + Colors.RESET);
-                System.out.println("All the monsters are DEAD! Hero team have won the game!");
+                System.out.println("Heroes have reached the monster nexus first! Hero team has won the game!");
                 System.out.println();
                 System.out.println(win);
                 System.out.println();
                 break;
             case 3:
                 System.out.println("All heroes and all monsters are DEAD! It is a DRAW!");
+                System.out.println();
+                break;
+            case 4:
+                System.out.println(lose);
+                System.out.println();
+                System.out.println(Colors.RED + "Unfortunately, monsters have reached the hero nexus first!" +
+                        " Monsters have won the game!"
+                        + Colors.RESET);
+                System.out.println();
+                break;
+            case 5:
+                System.out.println("Heroes and monsters have reached the opponents' nexus at the same time!" +
+                        " It is a DRAW!");
                 System.out.println();
                 break;
         }
