@@ -5,7 +5,7 @@ import java.util.*;
  * It controls all the game logics.
  * It is a role playing game, therefore it inherits from the RPGGame class.
  */
-public class LegendsGame extends RPGGame{
+public class LegendsGame extends RPGGame implements Runnable{
     private ArrayList<Hero> team; // The hero team
     private ArrayList<Monster> monsters; // The monster squad
     private ArrayList<Hero> faintedHeroes; // All fainted heroes
@@ -40,6 +40,11 @@ public class LegendsGame extends RPGGame{
 
     @Override
     public void play() {
+        run();
+    }
+
+    @Override
+    public void run() {
         prepare();
         formHeroTeam();
         printTeamMembers();
