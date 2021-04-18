@@ -53,7 +53,13 @@ public class LegendsGame extends RPGGame{
             }
 
             for (int i = 0; i < monsters.size(); ++i) {
-                monsterMove(i);
+                if (canMonsterAttack(i)) {
+                    // If the hero is within range to attack, attack (s)he
+                    Hero target = assignAHero(i);
+                    NotificationCenter.monsterAttack(2, monsters.get(i).monsterMarker, target.heroMarker);
+
+                    monsters.get(i).attack(target);
+                } else { monsterMove(i); } // Else, just move one step forward
             }
         }
     }
@@ -461,6 +467,9 @@ public class LegendsGame extends RPGGame{
         m[h.row][h.col].leftMarker = "  ";
         m[h.row][h.col].setMiddle();
 
+        // Since the hero is leaving this cell, the cell should be set to "no heroes" status
+        m[h.row][h.col].setHasHeroes(false);
+
         if (action.equalsIgnoreCase("W")) {
             // Go up
             h.setRow(h.row - 1);
@@ -482,6 +491,32 @@ public class LegendsGame extends RPGGame{
         // Update the left marker of the new cell to be the hero's marker (i.e. H1/H2/H3)
         m[h.row][h.col].leftMarker = h.heroMarker;
         m[h.row][h.col].setMiddle();
+
+        // Since the hero is in the new cell, the cell should be set to "has heroes" status
+        m[h.row][h.col].setHasHeroes(true);
+    }
+
+    public Monster assignAMonster(int heroIndex) {
+        // We automatically assign a neighboring monster that has the lowest HP to the hero
+        NotificationCenter.chooseAMonster(1);
+
+        Hero h = team.get(heroIndex);
+        Monster res = null;
+
+        double minHp = Double.MAX_VALUE;
+
+        for (Monster temp : monsters) {
+            // The square of the distance between the hero and the current monster
+            double distanceSquare = Math.pow(h.row - temp.row, 2) + Math.pow(h.col - temp.col, 2);
+
+            if (distanceSquare <= 2 && temp.hp < minHp) {
+                // If the current monster is in a neighboring cell of the hero, and it has a lower HP, update [res]
+                minHp = temp.hp;
+                res = temp;
+            }
+        }
+
+        return res;
     }
 
     public void monsterMove(int monsterIndex) {
@@ -505,23 +540,45 @@ public class LegendsGame extends RPGGame{
         m[monster.row][monster.col].setHasMonsters(true);
     }
 
-    public Monster assignAMonster(int heroIndex) {
-        // We automatically assign a neighboring monster that has the lowest HP to the hero
-        NotificationCenter.chooseAMonster();
+    public boolean canMonsterAttack(int monsterIndex) {
+        Monster monster = monsters.get(monsterIndex);
+        Cell[][] m = map.getMap();
+        int size = map.getSize();
 
-        Hero h = team.get(heroIndex);
-        Monster res = null;
+        if (monster.isDead()) { return false; }
+
+        // Check if there is a neighboring hero of the current monster
+        return (monster.col + 1 < size && m[monster.row][monster.col + 1].hasHeroes) || // Right
+
+                (monster.col - 1 >= 0 && m[monster.row][monster.col - 1].hasHeroes) || // Left
+
+                (monster.row + 1 < size && m[monster.row + 1][monster.col].hasHeroes) || // Down
+
+                (monster.row + 1 < size && monster.col + 1 < size &&
+                        m[monster.row + 1][monster.col + 1].hasHeroes) || // Lower right
+
+                (monster.row + 1 < size && monster.col - 1 >= 0 &&
+                        m[monster.row + 1][monster.col - 1].hasHeroes) || // Lower left
+
+                (m[monster.row][monster.col].hasHeroes);
+    }
+
+    public Hero assignAHero(int monsterIndex) {
+        // We automatically assign a neighboring hero that has the lowest HP to the monster
+        NotificationCenter.chooseAMonster(2);
+
+        Monster m = monsters.get(monsterIndex);
+        Hero res = null;
 
         double minHp = Double.MAX_VALUE;
 
-        for (Monster temp : monsters) {
-            // The square of the distance between the hero and the current monster
-            double distance = Math.pow(h.row - temp.row, 2) + Math.pow(h.col - temp.col, 2);
+        for (Hero h : team) {
+            double distanceSquare = Math.pow(h.row - m.row, 2) + Math.pow(h.col - m.col, 2);
 
-            if (distance <= 2 && temp.hp < minHp) {
-                // If the current monster is in a neighboring cell of the hero, and it has a lower HP, update [res]
-                minHp = temp.hp;
-                res = temp;
+            if (distanceSquare <= 2 && h.hp < minHp) {
+                // If the current hero is in a neighboring cell of the monster, and it has a lower HP, update [res]
+                minHp = h.hp;
+                res = h;
             }
         }
 

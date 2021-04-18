@@ -62,6 +62,7 @@ public class Map {
                 if (i == size - 1 && map[i][j] == null) {
                     if (j % 3 == 0) {
                         map[i][j] = new HeroNexusCell(heroMarker, "  ");
+                        map[i][j].setHasHeroes(true);
                         ++heroIndex;
                     }
                     else { map[i][j] = new HeroNexusCell("  ", "  "); }

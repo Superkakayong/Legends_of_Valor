@@ -46,7 +46,7 @@ public class Monster extends Role implements Fight{
 
         if (rand <= heroDodgeChance) {
             // The hero has dodged the attack
-            NotificationCenter.monsterAttack(1);
+            NotificationCenter.monsterAttack(1, monsterMarker, hero.heroMarker);
             return;
         }
 

@@ -513,14 +513,14 @@ public final class NotificationCenter {
     }
 
     // About the monster's attack.
-    public static void monsterAttack(int index) {
+    public static void monsterAttack(int index, String mMarker, String hMarker) {
         switch (index) {
             case 1:
-                System.out.println("Ops! Hero has dodged the attack!");
+                System.out.println("Ops! " + Colors.RED + hMarker + Colors.RESET + " has dodged the attack!");
                 System.out.println();
                 break;
             case 2:
-                System.out.println(Colors.RED + "Now it is the monster's turn to FIGHT!" + Colors.RESET);
+                System.out.println(Colors.RED + "Now it is " + mMarker + "'s turn to FIGHT!" + Colors.RESET);
                 System.out.println();
                 break;
         }
@@ -548,10 +548,21 @@ public final class NotificationCenter {
         }
     }
 
-    public static void chooseAMonster() {
-        System.out.println("Now the game will AUTOMATICALLY choose a neighboring monster that has the lowest HP for you!");
-        System.out.println("If there is ONLY ONE neighboring monster, then it is the ONE!");
-        System.out.println();
+    public static void chooseAMonster(int index) {
+        switch (index) {
+            case 1:
+                System.out.println("Now the game will AUTOMATICALLY choose a neighboring monster " +
+                        "that has the lowest HP for you!");
+                System.out.println("If there is ONLY ONE neighboring monster, then it is the ONE!");
+                System.out.println();
+                break;
+            case 2:
+                System.out.println("Now the game will AUTOMATICALLY choose a neighboring hero " +
+                        "that has the lowest HP for the monster!");
+                System.out.println("If there is ONLY ONE neighboring hero, then it is the ONE!");
+                System.out.println();
+                break;
+        }
     }
 
     // Messages when choosing a prop.
