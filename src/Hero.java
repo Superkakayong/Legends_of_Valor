@@ -184,7 +184,6 @@ public class Hero extends Role implements Fight{
      */
     public void attack(Monster monster, Map map) {
         // Get the monster's information
-        String monsterName = monster.name;
         double monsterDodgeChance = monster.dodgeChance;
         double strength = this.strength;
 
@@ -203,6 +202,7 @@ public class Hero extends Role implements Fight{
 
         if (rand <= monsterDodgeChance) {
             // The monster has dodged the attack
+            NotificationCenter.inflict(2, this, totalDamage, monster);
             NotificationCenter.heroAttack(4);
             return;
         }
@@ -211,7 +211,7 @@ public class Hero extends Role implements Fight{
         monster.defenseStat -= totalDamage;
 
         // Show "who caused how much damage to whom"
-        NotificationCenter.inflict(name, totalDamage, monsterName);
+        NotificationCenter.inflict(1, this, totalDamage, monster);
 
         // Check and process the status of the monster after being inflicted
         processMonsterStatus(monster);
@@ -309,7 +309,6 @@ public class Hero extends Role implements Fight{
      */
     public boolean castASpell(Monster monster, Map map) {
         // Get the monster's information
-        String monsterName = monster.name;
         double monsterDodgeChance = monster.dodgeChance;
         double dexterity = this.dexterity;
 
@@ -337,6 +336,7 @@ public class Hero extends Role implements Fight{
 
         if (rand <= monsterDodgeChance) {
             // The monster dodged the attack
+            NotificationCenter.inflict(2, this, totalDamage, monster);
             NotificationCenter.castASpell(4);
             return true;
         }
@@ -350,7 +350,7 @@ public class Hero extends Role implements Fight{
         else if (s instanceof LightningSpell) { monster.dodgeChance *= 0.9; }
 
         // Show "who caused how much damage to whom"
-        NotificationCenter.inflict(name, totalDamage, monsterName);
+        NotificationCenter.inflict(1, this, totalDamage, monster);
 
         // Check and process the status of the monster after being inflicted
         processMonsterStatus(monster);
@@ -617,7 +617,7 @@ public class Hero extends Role implements Fight{
         m.getMap()[row][col].setMiddle();
     }
 
-    public boolean teleport(Map m) {
+    public boolean teleport(Map m, ArrayList<Monster> monsters) {
         int newRow = -1, newCol = -1;
         boolean validIndexes = false;
         Scanner sc = new Scanner(System.in);
@@ -670,6 +670,9 @@ public class Hero extends Role implements Fight{
         } else if (isTaken(m, newRow, newCol)) {
             // The desired cell has been taken by another hero
             NotificationCenter.teleport(10);
+        } else if (isValidCell(m, newRow, newCol) && isBeyondMonsters(m, newRow, newCol, monsters)) {
+            // The desired cell has been explored, but it is beyond a monster in the same lane
+            NotificationCenter.teleport(11);
         } else {
             // A valid cell to teleport
             NotificationCenter.teleport(9);
@@ -707,17 +710,37 @@ public class Hero extends Role implements Fight{
     }
 
     private boolean isValidCell(Map m, int newRow, int newCol) {
-        int lane;
-
-        // Calculate the corresponding lane of the teleport cell
-        if (newCol <= 1) { lane = 0; }
-        else if (m.getSize() - newCol <= 2) { lane = 2; }
-        else { lane = 1; }
+        int lane = calculateLane(m, newRow, newCol);
 
         return newRow >= m.getMaxExploredLevels()[lane];
     }
 
     private boolean isTaken(Map map, int newRow, int newCol) {
         return !map.getMap()[newRow][newCol].leftMarker.equals("  ");
+    }
+
+    private int calculateLane(Map map, int newRow, int newCol) {
+        int lane;
+
+        // Calculate the corresponding lane of the teleport cell
+        if (newCol <= 1) { lane = 0; }
+        else if (map.getSize() - newCol <= 2) { lane = 2; }
+        else { lane = 1; }
+
+        return lane;
+    }
+
+    private boolean isBeyondMonsters(Map map, int newRow, int newCol, ArrayList<Monster> monsters) {
+        int lane = calculateLane(map, newRow, newCol);
+
+        for (Monster m : monsters) {
+            int monsterLane = calculateLane(map, m.row, m.col);
+
+            if (lane == monsterLane) {
+                if (newRow < m.row) { return true; }
+            }
+        }
+
+        return false;
     }
 }

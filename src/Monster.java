@@ -49,14 +49,15 @@ public class Monster extends Role implements Fight{
         // Cave cells boost the agility of any hero who is inside them by 10%
         if (m[hero.row][hero.col] instanceof CaveCell) { heroDodgeChance *= 1.1; }
 
-        if (rand <= heroDodgeChance) {
-            // The hero has dodged the attack
-            NotificationCenter.monsterAttack(1, monsterMarker, hero.heroMarker);
-            return;
-        }
-
         // The hero failed to dodged the attack
         double totalDamage = damage;
+
+        if (rand <= heroDodgeChance) {
+            // The hero has dodged the attack
+            NotificationCenter.inflict(2, this, totalDamage, hero);
+            NotificationCenter.monsterAction(1, monsterMarker, hero.heroMarker, name, heroName);
+            return;
+        }
 
         if (hero.equippedArmor != null) {
             // If the hero has equipped an armor, the damage will be reduced for some amount
@@ -71,7 +72,7 @@ public class Monster extends Role implements Fight{
         hero.hp -= totalDamage;
 
         // Show "who caused how much damage to whom"
-        NotificationCenter.inflict(name, totalDamage, heroName);
+        NotificationCenter.inflict(1, this, totalDamage, hero);
 
         // Check and process the status of the hero after being inflicted
         processHeroStatus(hero);

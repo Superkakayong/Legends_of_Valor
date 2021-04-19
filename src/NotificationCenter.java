@@ -117,7 +117,7 @@ public final class NotificationCenter {
     }
 
     public static void showOperations() {
-        System.out.println(Colors.YELLOW + "-------------------------------------------" + Colors.RESET);
+        System.out.println(Colors.YELLOW + "---------------------------------------------" + Colors.RESET);
 
         System.out.print(Colors.RED + "W/w" + Colors.RESET);
         System.out.print(": Move Up; ");
@@ -157,7 +157,7 @@ public final class NotificationCenter {
         System.out.print(Colors.RED + "M/m" + Colors.RESET);
         System.out.println(": Show hero's inventory ");
 
-        System.out.println(Colors.YELLOW + "-------------------------------------------" + Colors.RESET);
+        System.out.println(Colors.YELLOW + "---------------------------------------------" + Colors.RESET);
     }
 
     public static void spawnNewMonsters() {
@@ -305,6 +305,11 @@ public final class NotificationCenter {
         }
     }
 
+    public static void monsterAction() {
+        System.out.println(Colors.RED_BG + Colors.BLACK + " Attention! Monster Squad Revenges! " + Colors.RESET);
+        System.out.println();
+    }
+
     /*
         Show messages related to the market.
      */
@@ -414,9 +419,29 @@ public final class NotificationCenter {
     }
 
     // About the damage to the roles (i.e. heroes/monsters).
-    public static void inflict(String name1, double damage, String name2) {
-        System.out.println(Colors.RED + name1 + " has caused " + damage + " damage to " + name2 + Colors.RESET);
-        System.out.println();
+    public static void inflict(int index, Role r1, double damage, Role r2) {
+        String marker1, marker2;
+
+        if (r1 instanceof Hero) {
+            marker1 = ((Hero) r1).heroMarker;
+            marker2 = ((Monster) r2).monsterMarker;
+        } else {
+            marker1 = ((Monster) r1).monsterMarker;
+            marker2 = ((Hero) r2).heroMarker;
+        }
+
+        switch (index) {
+            case 1:
+                System.out.println(Colors.RED + marker1 + " [ " + r1.name + " ] " + "has caused " +
+                        damage + " damage to " + marker2 + " [ " + r2.name + " ] !" + Colors.RESET);
+                System.out.println();
+                break;
+            case 2:
+                System.out.println(Colors.RED + marker1 + " [ " + r1.name + " ] " + "tries to inflict " +
+                        damage + " damage to " + marker2 + " [ " + r2.name + " ] But..." + Colors.RESET);
+                System.out.println();
+                break;
+        }
     }
 
     // About the damage reduction from the armors.
@@ -524,14 +549,20 @@ public final class NotificationCenter {
     }
 
     // About the monster's attack.
-    public static void monsterAttack(int index, String mMarker, String hMarker) {
+    public static void monsterAction(int index, String mMarker, String hMarker, String mName, String hName) {
         switch (index) {
             case 1:
-                System.out.println("Ops! " + Colors.RED + hMarker + Colors.RESET + " has dodged the attack!");
+                System.out.println("Ops! " + Colors.RED + hMarker + " [ " + hName + " ] " + Colors.RESET +
+                        "has dodged the attack!");
                 System.out.println();
                 break;
             case 2:
-                System.out.println(Colors.RED + "Now it is " + mMarker + "'s turn to FIGHT!" + Colors.RESET);
+                System.out.println(Colors.RED + mMarker + " [ " + mName + " ] " + "now ATTACKS " +
+                        hMarker + " [ " + hName + " ] !" + Colors.RESET);
+                System.out.println();
+                break;
+            case 3:
+                System.out.println(Colors.RED + mMarker + " [ " + mName + " ] " + "now MOVES FORWARD!" + Colors.RESET);
                 System.out.println();
                 break;
         }
@@ -559,7 +590,7 @@ public final class NotificationCenter {
         }
     }
 
-    public static void chooseAMonster(int index) {
+    public static void chooseAnOpponent(int index) {
         switch (index) {
             case 1:
                 System.out.println("Now the game will AUTOMATICALLY choose a neighboring monster " +
@@ -568,8 +599,10 @@ public final class NotificationCenter {
                 System.out.println();
                 break;
             case 2:
-                System.out.println("Now the game will AUTOMATICALLY choose a neighboring hero " +
-                        "that has the lowest HP for the monster!");
+                System.out.println("The monster will either move one step forward or attack the hero " +
+                        "(if the hero is within range).");
+                System.out.println("The game will AUTOMATICALLY choose a neighboring hero " +
+                        "that has the lowest HP for the monster.");
                 System.out.println("If there is ONLY ONE neighboring hero, then it is the ONE!");
                 System.out.println();
                 break;
@@ -739,6 +772,10 @@ public final class NotificationCenter {
                 break;
             case 10:
                 System.out.println("Cannot teleport to this cell since it has already been taken by another hero!");
+                System.out.println();
+                break;
+            case 11:
+                System.out.println("Cannot teleport to a cell that is beyond a monster!");
                 System.out.println();
                 break;
         }

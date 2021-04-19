@@ -11,7 +11,7 @@ public class HeroList {
     private static void setHeroes() {
         list = new ArrayList<>();
 
-        list.add(new Warrior("Neville", 2, 100, 700, 400, 400, 1354, 7));
+        list.add(new Warrior("Neville", 3, 250, 700, 400, 400, 1354, 7));
         list.add(new Warrior("Ron", 4, 600, 800, 600, 400, 1204, 8));
         list.add(new Warrior("Harry Potter", 7, 750, 850, 400, 600, 2800, 6));
         list.add(new Warrior("Hermione", 8, 300, 400, 250, 600, 4000, 9));
