@@ -16,7 +16,7 @@ public class Hero extends Role implements Fight{
     protected int exp;
     protected int expBonus; // For accumulating the EXP bonus for every successful fight
     protected int startingCol; // Starting column position of the hero
-    protected String heroMarker;
+    protected String heroMarker; // The marker of the hero (e.g. H1/H2/H3)
 
     // All kinds of props that the hero owns
     protected ArrayList<Prop> props;
@@ -69,7 +69,6 @@ public class Hero extends Role implements Fight{
     public void setStartingCol(int startingCol) {
         this.startingCol = startingCol;
     }
-
 
     /*
         Check if a hero has fainted.
@@ -603,6 +602,9 @@ public class Hero extends Role implements Fight{
         return true;
     }
 
+    /*
+        A hero can go back to her/his nexus at any time.
+     */
     public void backToNexus(Map m) {
         // Set the left marker of the original cell to be "  "
         m.getMap()[row][col].leftMarker = "  ";
@@ -617,6 +619,9 @@ public class Hero extends Role implements Fight{
         m.getMap()[row][col].setMiddle();
     }
 
+    /*
+        The hero can choose to teleport to another cell.
+     */
     public boolean teleport(Map m, ArrayList<Monster> monsters) {
         int newRow = -1, newCol = -1;
         boolean validIndexes = false;
@@ -671,7 +676,7 @@ public class Hero extends Role implements Fight{
             // The desired cell has been taken by another hero
             NotificationCenter.teleport(10);
         } else if (isValidCell(m, newRow, newCol) && isBeyondMonsters(m, newRow, newCol, monsters)) {
-            // The desired cell has been explored, but it is beyond a monster in the same lane
+            // The desired cell has been explored, but it is beyond a monster of the same lane
             NotificationCenter.teleport(11);
         } else {
             // A valid cell to teleport
@@ -701,14 +706,23 @@ public class Hero extends Role implements Fight{
         return false;
     }
 
+    /*
+        Check if a cell is an Inaccessible Cell.
+     */
     private boolean isInaccessibleCell(Map m, int newRow, int newCol) {
         return m.getMap()[newRow][newCol] instanceof InaccessibleCell;
     }
 
+    /*
+        Check if a new cell is in the same lane of the current cell.
+     */
     private boolean isSameLane(int newCol) {
         return Math.abs(newCol - col) <= 1;
     }
 
+    /*
+
+     */
     private boolean isValidCell(Map m, int newRow, int newCol) {
         int lane = calculateLane(m, newRow, newCol);
 
