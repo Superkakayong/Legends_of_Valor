@@ -41,12 +41,10 @@ public class LegendsGame extends RPGGame implements Runnable{
     }
 
     @Override
-    public void play() {
-        run();
-    }
+    public void run() { play(); }
 
     @Override
-    public void run() {
+    public void play() {
         prepare();
         formHeroTeam();
         printTeamMembers();
@@ -95,7 +93,7 @@ public class LegendsGame extends RPGGame implements Runnable{
                 hasFightFinished();
             }
 
-            ++numOfRounds; // A round finished
+            ++numOfRounds; // A round has finished
 
             if (!hasFightFinished() && !faintedHeroes.isEmpty()) {
                 /* If:
@@ -221,9 +219,6 @@ public class LegendsGame extends RPGGame implements Runnable{
     private void initializeMonsters() {
         NotificationCenter.fight(1, "", "");
 
-        // The list of all monsters
-        List<Monster> monsterList = new MonsterList().getMonsters();
-
         // The list of all monsters of the same level as a certain hero
         List<Monster> sameLevelMonsters = new ArrayList<>();
 
@@ -231,6 +226,10 @@ public class LegendsGame extends RPGGame implements Runnable{
 
         for (int i = 0; i < team.size(); ++i) {
             // For every hero in the hero team
+
+            // The list of all monsters
+            List<Monster> monsterList = new MonsterList().getMonsters();
+
             for (int j = 0; j < monsterList.size(); ++j) {
                 // For every monster in the monster list
                 if (team.get(i).level == monsterList.get(j).level) {
@@ -252,7 +251,7 @@ public class LegendsGame extends RPGGame implements Runnable{
             monsters.get(size - 1).setRow(0);
             monsters.get(size - 1).setCol(3 * i);
 
-            if (map.getMap()[0][3 * i].rightMarker.equals("  ")) {
+            if (numOfRounds == 8) {
                 // If the monster is created after 8 rounds, the rightMarker needs to be manually set to Mx
                 map.getMap()[0][3 * i].rightMarker = "M" + monsterSquadSize;
                 map.getMap()[0][3 * i].setMiddle();
