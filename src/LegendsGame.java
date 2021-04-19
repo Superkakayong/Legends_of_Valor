@@ -83,6 +83,10 @@ public class LegendsGame extends RPGGame implements Runnable{
                 hasFightFinished();
             }
 
+            map.printMap();
+            NotificationCenter.monsterAction();
+            NotificationCenter.chooseAnOpponent(2);
+
             for (int i = 0; i < monsters.size(); ++i) {
                 if (shouldMonsterAttack(i)) { monsterAttack(i); } // If the hero is within range to attack, attack (s)he
 
@@ -414,7 +418,7 @@ public class LegendsGame extends RPGGame implements Runnable{
 
         if (action.equalsIgnoreCase("B")) { team.get(heroIndex).backToNexus(map); }
 
-        if (action.equalsIgnoreCase("T")) { return team.get(heroIndex).teleport(map); }
+        if (action.equalsIgnoreCase("T")) { return team.get(heroIndex).teleport(map, monsters); }
 
         if (action.equalsIgnoreCase("W") ||
                 action.equalsIgnoreCase("A") ||
@@ -582,7 +586,7 @@ public class LegendsGame extends RPGGame implements Runnable{
 
     private Monster assignAMonster(int heroIndex) {
         // We automatically assign a neighboring monster that has the lowest HP to the hero
-        NotificationCenter.chooseAMonster(1);
+        NotificationCenter.chooseAnOpponent(1);
 
         Hero h = team.get(heroIndex);
         Monster res = null;
@@ -606,6 +610,8 @@ public class LegendsGame extends RPGGame implements Runnable{
     private void monsterMove(int monsterIndex) {
         Monster monster = monsters.get(monsterIndex);
         Cell[][] m = map.getMap();
+
+        NotificationCenter.monsterAction(3, monster.monsterMarker, "", monster.name, "");
 
         // Set the right marker of the original cell to be "  "
         m[monster.row][monster.col].rightMarker = "  ";
@@ -665,7 +671,7 @@ public class LegendsGame extends RPGGame implements Runnable{
         Monster m = monsters.get(monsterIndex);
         Hero target = assignAHero(monsterIndex);
 
-        NotificationCenter.monsterAttack(2, m.monsterMarker, target.heroMarker);
+        NotificationCenter.monsterAction(2, m.monsterMarker, target.heroMarker, m.name, target.name);
 
         m.attack(target, map);
 
@@ -675,7 +681,7 @@ public class LegendsGame extends RPGGame implements Runnable{
 
     private Hero assignAHero(int monsterIndex) {
         // We automatically assign a neighboring hero that has the lowest HP to the monster
-        NotificationCenter.chooseAMonster(2);
+//        NotificationCenter.chooseAnOpponent(2);
 
         Monster m = monsters.get(monsterIndex);
         Hero res = null;
