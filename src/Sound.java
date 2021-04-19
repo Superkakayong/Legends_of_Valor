@@ -22,42 +22,46 @@ public class Sound implements Runnable{
         SourceDataLine auline = null;
         DataLine.Info info;
 
-        try {
-            // load the file
-            file = new File("Sound.wav");
-            // get the audio input stream
-            audio = AudioSystem.getAudioInputStream(file);
-            // get the format of the audio
-            format = audio.getFormat();
-            // construct the info object containing the information about the audio
-            info = new DataLine.Info(SourceDataLine.class, format);
+        while (true) {
+            try {
+                // load the file
+                file = new File("hyukoh.wav");
+                // get the audio input stream
+                audio = AudioSystem.getAudioInputStream(file);
+                // get the format of the audio
+                format = audio.getFormat();
+                // construct the info object containing the information about the audio
+                info = new DataLine.Info(SourceDataLine.class, format);
 
-            auline = (SourceDataLine) AudioSystem.getLine(info);
-            auline.open(format);
-            auline.start();
+                auline = (SourceDataLine) AudioSystem.getLine(info);
+                auline.open(format);
+                auline.start();
 
-            int nBytesRead = 0;
-            byte[] abData = new byte[524288];
+                int nBytesRead = 0;
+                byte[] abData = new byte[524288];
 
-            // read each info stream of the audio
-            while (nBytesRead != -1) {
-                nBytesRead = audio.read(abData, 0, abData.length);
+                // read each info stream of the audio
+                while (nBytesRead != -1) {
+                    nBytesRead = audio.read(abData, 0, abData.length);
 
-                if (nBytesRead >= 0) { auline.write(abData, 0, nBytesRead); }
+                    if (nBytesRead >= 0) {
+                        auline.write(abData, 0, nBytesRead);
+                    }
+                }
+            } catch (IOException e) {
+                // System.out.println(e.getMessage());
+                e.printStackTrace();
+            } catch (UnsupportedAudioFileException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (LineUnavailableException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } finally {
+                // drains data from the queued line
+                auline.drain();
+                auline.close();
             }
-        } catch (IOException e) {
-            // System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (LineUnavailableException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            // drains data from the queued line
-            auline.drain();
-            auline.close();
         }
     }
 }

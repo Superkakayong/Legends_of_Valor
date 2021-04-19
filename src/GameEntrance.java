@@ -10,7 +10,7 @@ public class GameEntrance {
         Thread thread1 = new Thread(playSound);
         Thread thread2 = new Thread(legends);
 
-//        thread1.start();
+        thread1.start();
         thread2.start();
     }
 }
