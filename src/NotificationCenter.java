@@ -234,7 +234,7 @@ public final class NotificationCenter {
                 System.out.println(" by entering the index at the beginning of each line (e.g. 3 or 10 or 14): ");
                 break;
             case 2:
-                System.out.println("Invalid input! Out of the range of the hero list!");
+                System.out.println("Invalid input! Out of the range of the hero list! Pleas enter again: ");
                 break;
             case 3:
                 System.out.println("Invalid input! Must be an Integer!");

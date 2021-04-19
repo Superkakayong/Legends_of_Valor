@@ -4,12 +4,12 @@
 public class Cell {
     protected String leftMarker;
     protected String rightMarker;
-    protected String cellType;
-    protected boolean hasMonsters;
-    protected boolean hasHeroes;
+    protected String cellType; // i.e. BushCell/CaveCell/...
+    protected boolean hasMonsters; // Record if this cell has a monster
+    protected boolean hasHeroes; // Record if this cell has a hero
 
-    private StringBuilder topAndBottom;
-    private StringBuilder middle;
+    private StringBuilder topAndBottom; // Top and bottom bound of the cell
+    private StringBuilder middle; // Middle contents of the cell
 
     public Cell() {}
 
