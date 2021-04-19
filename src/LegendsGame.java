@@ -314,9 +314,10 @@ public class LegendsGame extends RPGGame implements Runnable{
                     !action.equalsIgnoreCase("O") && !action.equalsIgnoreCase("P") &&
                     !action.equalsIgnoreCase("F") && !action.equalsIgnoreCase("C") &&
                     !action.equalsIgnoreCase("T") && !action.equalsIgnoreCase("B") &&
-                    !action.equalsIgnoreCase("V") && !action.equalsIgnoreCase("M")) {
+                    !action.equalsIgnoreCase("V") && !action.equalsIgnoreCase("M") &&
+                    !action.equalsIgnoreCase("U")) {
 
-                // Invalid input (i.e. not a/w/s/d/q/i)
+                // Invalid input (i.e. not w/a/s/d/q/i/o/p/f/c/t/b/v/m/u)
                 NotificationCenter.mapRelated(3);
                 continue;
             }
