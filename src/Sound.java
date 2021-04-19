@@ -23,9 +23,10 @@ public class Sound implements Runnable{
         DataLine.Info info;
 
         while (true) {
+            // Let the music loop!!! So long as you are alive, don't stop the music!!! :)
             try {
                 // load the file
-                file = new File("hyukoh.wav");
+                file = new File("Sound.wav");
                 // get the audio input stream
                 audio = AudioSystem.getAudioInputStream(file);
                 // get the format of the audio
@@ -44,9 +45,8 @@ public class Sound implements Runnable{
                 while (nBytesRead != -1) {
                     nBytesRead = audio.read(abData, 0, abData.length);
 
-                    if (nBytesRead >= 0) {
-                        auline.write(abData, 0, nBytesRead);
-                    }
+                    if (nBytesRead >= 0) { auline.write(abData, 0, nBytesRead); }
+
                 }
             } catch (IOException e) {
                 // System.out.println(e.getMessage());
@@ -63,5 +63,6 @@ public class Sound implements Runnable{
                 auline.close();
             }
         }
+
     }
 }
