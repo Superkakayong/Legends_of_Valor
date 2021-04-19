@@ -82,13 +82,15 @@ public class LegendsGame extends RPGGame implements Runnable{
             }
 
             map.printMap();
-            NotificationCenter.monsterAction();
+            NotificationCenter.attention();
             NotificationCenter.chooseAnOpponent(2);
 
             for (int i = 0; i < monsters.size(); ++i) {
                 if (shouldMonsterAttack(i)) { monsterAttack(i); } // If the hero is within range to attack, attack (s)he
 
-                else { monsterMove(i); } // Otherwise, just move one step forward towards the hero nexus
+                // Otherwise if there is not a monster ahead of the current monster,
+                // just move one step forward towards the hero nexus
+                else if (!hasMonsterAhead(i)) { monsterMove(i); }
 
                 hasFightFinished();
             }
@@ -665,6 +667,14 @@ public class LegendsGame extends RPGGame implements Runnable{
                         m[monster.row + 1][monster.col - 1].hasHeroes) || // Lower left
 
                 (m[monster.row][monster.col].hasHeroes); // Monster's own cell
+    }
+
+    private boolean hasMonsterAhead(int monsterIndex) {
+        Monster monster = monsters.get(monsterIndex);
+        Cell[][] m = map.getMap();
+        int size = map.getSize();
+
+        return (monster.row + 1 < size) && !m[monster.row + 1][monster.col].rightMarker.equals("  ");
     }
 
     private void monsterAttack(int monsterIndex) {

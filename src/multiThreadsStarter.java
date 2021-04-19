@@ -5,7 +5,7 @@ public class multiThreadsStarter {
     public multiThreadsStarter() {}
 
     /*
-        Initialize and start all the threads
+        Initialize and start all the threads.
      */
     public void initializeThreads() {
         Runnable playSound = new Sound();
