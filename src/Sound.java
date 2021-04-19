@@ -23,9 +23,13 @@ public class Sound implements Runnable{
         DataLine.Info info;
 
         try {
+            // load the file
             file = new File("Sound.wav");
+            // get the audio input stream
             audio = AudioSystem.getAudioInputStream(file);
+            // get the format of the audio
             format = audio.getFormat();
+            // construct the info object containing the information about the audio
             info = new DataLine.Info(SourceDataLine.class, format);
 
             auline = (SourceDataLine) AudioSystem.getLine(info);
@@ -35,6 +39,7 @@ public class Sound implements Runnable{
             int nBytesRead = 0;
             byte[] abData = new byte[524288];
 
+            // read each info stream of the audio
             while (nBytesRead != -1) {
                 nBytesRead = audio.read(abData, 0, abData.length);
 
@@ -50,6 +55,7 @@ public class Sound implements Runnable{
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
+            // drains data from the queued line
             auline.drain();
             auline.close();
         }

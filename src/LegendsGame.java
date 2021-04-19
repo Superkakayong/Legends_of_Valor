@@ -80,12 +80,15 @@ public class LegendsGame extends RPGGame implements Runnable{
                 // But the hero may not have any potion in her/his inventory, thus performAction() is false.
                 // Then we still need to loop again to choose another action for this hero
                 if (!isValidAction(action, i) || !performAction(action, i)) { --i; }
+                hasFightFinished();
             }
 
             for (int i = 0; i < monsters.size(); ++i) {
                 if (shouldMonsterAttack(i)) { monsterAttack(i); } // If the hero is within range to attack, attack (s)he
 
                 else { monsterMove(i); } // Otherwise, just move one step forward towards the hero nexus
+
+                hasFightFinished();
             }
 
             ++numOfRounds; // A round finished

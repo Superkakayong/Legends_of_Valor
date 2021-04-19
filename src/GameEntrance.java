@@ -11,7 +11,6 @@ public class GameEntrance {
         Thread thread2 = new Thread(legends);
 
         thread2.start();
-
-        while (true) { thread1.start(); }
+        thread1.start();
     }
 }
