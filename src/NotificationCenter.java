@@ -272,10 +272,10 @@ public final class NotificationCenter {
                 System.out.println();
                 break;
             case 2:
-                System.out.println("Please enter your action (w/a/s/d/q/i/o/p/f/c/t/b/v): ");
+                System.out.println("Please enter your action [w/a/s/d/q/i/o/p/f/c/t/b/v/m/u]: ");
                 break;
             case 3:
-                System.out.println("Invalid input! Must be one of [w/a/s/d/q/i/o/p/f/c/t/b/v/m]!");
+                System.out.println("Invalid input! Must be one of [w/a/s/d/q/i/o/p/f/c/t/b/v/m/u]!");
                 System.out.println();
                 break;
             case 4:
