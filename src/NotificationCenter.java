@@ -305,7 +305,7 @@ public final class NotificationCenter {
         }
     }
 
-    public static void monsterAction() {
+    public static void attention() {
         System.out.println(Colors.RED_BG + Colors.BLACK + " Attention! Monster Squad Revenges! " + Colors.RESET);
         System.out.println();
     }
