@@ -8,7 +8,7 @@ import java.util.*;
  * It also implements the Runnable interface since this class is a [thread] in the project.
  * We also have another [thread] in the project called Sound.java.
  *
- * There are also "more than enough" comments in this class to help you understand every piece of the logics!
+ * There are also "MORE THAN ENOUGH" comments in this class to help you understand every piece of the logics!
  * In fact, you will find very detailed comments in every class of the project!
  */
 public class LegendsGame extends RPGGame implements Runnable{
@@ -819,7 +819,7 @@ public class LegendsGame extends RPGGame implements Runnable{
                 // Set the cell to "no heroes" status
                 map.getMap()[h.row][h.col].setHasHeroes(false);
             } else {
-                // For all heroes who are still ALIVE after each round, reward them with extra money and EXP
+                // For all heroes who are still ALIVE after each fight, reward them with extra money and EXP
                 h.money += 100 * h.level;
                 h.setExpBonus(5 * h.level);
 
