@@ -22,10 +22,10 @@ public class Market {
         weapons.add(new Weapon("Bow", 500, 2, 400, 2));
         weapons.add(new Weapon("Dagger", 350, 1, 250, 1));
 
-        armors.add(new Armor("Platinum_Shield", 150, 1, 200));
-        armors.add(new Armor("Breastplate", 350, 3, 600));
-        armors.add(new Armor("Full_Body_Armor", 1000, 5, 1100));
-        armors.add(new Armor("Invisibility_Cloak", 1500, 7, 1500));
+        armors.add(new Armor("Platinum_Shield", 150, 1, 100));
+        armors.add(new Armor("Breastplate", 350, 3, 180));
+        armors.add(new Armor("Full_Body_Armor", 600, 5, 250));
+        armors.add(new Armor("Invisibility_Cloak", 800, 8, 350));
 
         potions.add(new Potion("Liquid Luck", 800, 7, 200, "Strength"));
         potions.add(new Potion("Calming Draught", 250, 1, 50, "Strength"));

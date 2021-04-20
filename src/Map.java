@@ -1,3 +1,6 @@
+/**
+ * This class represents the game map.
+ */
 import java.util.Random;
 
 public class Map {
@@ -29,11 +32,20 @@ public class Map {
         for (int i = 0; i < 3; ++i) { maxExploredLevels[i] = size - 1; }
     }
 
+    /*
+        Update the explored level of a specific lane.
+     */
     public void updateExploredLevel(int lane) {
-        if (lane < 0 || lane >= maxExploredLevels.length) { return; }
+        if (lane < 0 || lane >= maxExploredLevels.length) { return; } // Check if it is a valid lane
+
+        // Minus one actually means PLUS ONE on the explored level
+        // because the hero moves forward by deducting one from her/his row position
         --maxExploredLevels[lane];
     }
 
+    /*
+        Initialize the map.
+     */
     private void mapInitialization() {
         Random seed = new Random();
         int heroIndex = 1, monsterIndex = 1;
@@ -80,6 +92,9 @@ public class Map {
         }
     }
 
+    /*
+        Print the map.
+     */
     public void printMap() {
         System.out.println(Colors.PURPLE_BG + Colors.BLACK +" World Map: " + Colors.RESET);
         System.out.println();
