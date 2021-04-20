@@ -343,7 +343,7 @@
 ### 7. Additional Sound Files
 
 - Besides **Hedwig's Theme**, we also provide several other sound options for you!
-- They are all in [Additional Sound Files](https://drive.google.com/drive/folders/1--bvDKvoDczm2OHPh_hT-hl0Fc7iKNlC?usp=sharing) or [Additional Sound Files (Baidu Netdisk)](https://pan.baidu.com/s/1fMfmfCwCBE-4uYLBskZ0JA) (password: icfk). Feel free to download this folder!
+- They are all in [Additional Sound Files (Google Drive)](https://drive.google.com/drive/folders/1--bvDKvoDczm2OHPh_hT-hl0Fc7iKNlC?usp=sharing) or [Additional Sound Files (Baidu Netdisk)](https://pan.baidu.com/s/1fMfmfCwCBE-4uYLBskZ0JA) (password: icfk). Feel free to download this folder!
 - Once you have downloaded this folder, pick a song and **rename** it as "**Sound.wav**".
 - Then put it into the aforementioned directory (it depends on whether you are running the project via an **IDE** or the **Mac Terminal**).
 - **Enjoy The Rest~**
