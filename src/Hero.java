@@ -71,14 +71,15 @@ public class Hero extends Role implements Fight{
     }
 
     /*
-        Check if a hero has fainted.
+        Check if a hero has dead.
     */
-    public boolean hasFainted() {
+    public boolean hasDead() {
         return hp <= 0;
     }
 
     /*
         Check if a hero can level up.
+        Please be noticed that the maximum level for a hero is level 10.
      */
     public boolean checkLevelUp() {
         return levelUpBehavior.canLevelUp() && level <= 9;
@@ -191,7 +192,6 @@ public class Hero extends Role implements Fight{
         // Koulou cells buff the strength of any hero who is inside them by 10%
         if (m[row][col] instanceof KoulouCell) { strength *= 1.1; }
 
-
         // Calculate the total damage that the hero can inflict to the monster
 //        equippedWeapon = chooseWeapon();
         double totalDamage = equippedWeapon == null ? strength * 0.5 : equippedWeapon.damage(strength);
@@ -221,6 +221,7 @@ public class Hero extends Role implements Fight{
      */
     public Weapon chooseWeapon() {
         if (weapons.isEmpty()) {
+            // If the hero has no weapons in her/his weapon inventory, return null
             NotificationCenter.heroAttack(6);
             return null;
         }
@@ -288,7 +289,7 @@ public class Hero extends Role implements Fight{
             // The monster has blocked all the damage
             NotificationCenter.castASpell(5);
         } else {
-            // The monster's failed to block all the damage
+            // The monster failed to block all the damage
             monster.hp += monster.defenseStat; // Notice: now monster.defenseStat < 0
             monster.defenseStat = 0; // Reset monster.defenseStat to 0 (no negative defense)
             String info = "Monster " + monsterName;
@@ -297,7 +298,7 @@ public class Hero extends Role implements Fight{
                 // The monster is still alive
                 NotificationCenter.aliveOrDead(1, info, monster.hp);
             } else {
-                // The monster is DEAD
+                // The monster is DEAD ^
                 NotificationCenter.aliveOrDead(2, info, 0);
             }
         }
@@ -311,7 +312,7 @@ public class Hero extends Role implements Fight{
         double monsterDodgeChance = monster.dodgeChance;
         double dexterity = this.dexterity;
 
-        Spell s = chooseSpell();
+        Spell s = chooseSpell(); // Pick a spell in the hero's spell inventory
 
         Cell[][] m = map.getMap();
 
@@ -373,6 +374,7 @@ public class Hero extends Role implements Fight{
         Scanner sc = new Scanner(System.in);
         int choice; // Get the spell that the hero wants to choose
 
+        // Input validation checking
         while (true) {
             if (sc.hasNextInt()) {
                 choice = sc.nextInt();
@@ -623,7 +625,7 @@ public class Hero extends Role implements Fight{
         The hero can choose to teleport to another cell.
      */
     public boolean teleport(Map m, ArrayList<Monster> monsters) {
-        int newRow = -1, newCol = -1;
+        int newRow = -1, newCol = -1; // The row and column that the hero wants to teleport to
         boolean validIndexes = false;
         Scanner sc = new Scanner(System.in);
 
@@ -655,7 +657,7 @@ public class Hero extends Role implements Fight{
 
                     if (newCol < 0 || newCol >= m.getSize()) {
                         NotificationCenter.teleport(2);
-                    } else { validIndexes = true; break; }
+                    } else { validIndexes = true; break; } // Successfully got a valid row and column indexes
                 } else {
                     sc.next();
                     NotificationCenter.teleport(3);
@@ -675,8 +677,8 @@ public class Hero extends Role implements Fight{
         } else if (isTaken(m, newRow, newCol)) {
             // The desired cell has been taken by another hero
             NotificationCenter.teleport(10);
-        } else if (isValidCell(m, newRow, newCol) && isBeyondMonsters(m, newRow, newCol, monsters)) {
-            // The desired cell has been explored, but it is beyond a monster of the same lane
+        } else if (isValidCell(m, newRow, newCol) && isBehindMonsters(m, newRow, newCol, monsters)) {
+            // The desired cell has been explored, but it is behind a monster of the same lane
             NotificationCenter.teleport(11);
         } else {
             // A valid cell to teleport
@@ -721,7 +723,7 @@ public class Hero extends Role implements Fight{
     }
 
     /*
-
+        Check if a cell belongs to the explored cells in that lane.
      */
     private boolean isValidCell(Map m, int newRow, int newCol) {
         int lane = calculateLane(m, newRow, newCol);
@@ -729,10 +731,16 @@ public class Hero extends Role implements Fight{
         return newRow >= m.getMaxExploredLevels()[lane];
     }
 
+    /*
+        Check if a cell has already been taken by another hero.
+     */
     private boolean isTaken(Map map, int newRow, int newCol) {
         return !map.getMap()[newRow][newCol].leftMarker.equals("  ");
     }
 
+    /*
+        Calculate the lane that a cell belongs to
+     */
     private int calculateLane(Map map, int newRow, int newCol) {
         int lane;
 
@@ -744,14 +752,18 @@ public class Hero extends Role implements Fight{
         return lane;
     }
 
-    private boolean isBeyondMonsters(Map map, int newRow, int newCol, ArrayList<Monster> monsters) {
+    /*
+        Check if a cell is behind any monsters in that lane.
+     */
+    private boolean isBehindMonsters(Map map, int newRow, int newCol, ArrayList<Monster> monsters) {
         int lane = calculateLane(map, newRow, newCol);
 
         for (Monster m : monsters) {
             int monsterLane = calculateLane(map, m.row, m.col);
 
             if (lane == monsterLane) {
-                if (newRow < m.row) { return true; }
+                // Find a monster that is in the same lane as the cell is
+                if (newRow < m.row) { return true; } // The cell is beyond the monster
             }
         }
 

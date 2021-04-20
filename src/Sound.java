@@ -9,9 +9,18 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * This class contains the functions of playing music when playing the game.
+ *
+ * It implements the Runnable interface since this class is a [thread] in the project.
+ * We also have another [thread] in the project called LegendsGame.java.
+ */
 public class Sound implements Runnable{
     public Sound() {}
 
+    /*
+        Override the run() method in the Runnable interface.
+     */
     @Override
     public void run() {
         File file;
@@ -27,10 +36,13 @@ public class Sound implements Runnable{
             try {
                 // load the file
                 file = new File("Sound.wav");
+
                 // get the audio input stream
                 audio = AudioSystem.getAudioInputStream(file);
+
                 // get the format of the audio
                 format = audio.getFormat();
+
                 // construct the info object containing the information about the audio
                 info = new DataLine.Info(SourceDataLine.class, format);
 
@@ -41,14 +53,13 @@ public class Sound implements Runnable{
                 int nBytesRead = 0;
                 byte[] abData = new byte[524288];
 
-                // read each info stream of the audio
                 while (nBytesRead != -1) {
+                    // read each info stream of the audio
                     nBytesRead = audio.read(abData, 0, abData.length);
 
                     if (nBytesRead >= 0) { auline.write(abData, 0, nBytesRead); }
                 }
             } catch (IOException e) {
-                // System.out.println(e.getMessage());
                 e.printStackTrace();
             } catch (UnsupportedAudioFileException e) {
                 // TODO Auto-generated catch block

@@ -11,8 +11,8 @@ public class multiThreadsStarter {
         Runnable playSound = new Sound();
         Runnable legends = new LegendsGame();
 
-        Thread thread1 = new Thread(playSound); // A thread that controls sound playing
-        Thread thread2 = new Thread(legends); // A thread that controls game playing
+        Thread thread1 = new Thread(playSound); // A thread that controls SOUND playing
+        Thread thread2 = new Thread(legends); // A thread that controls GAME playing
 
         thread1.start();
         thread2.start();

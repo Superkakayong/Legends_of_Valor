@@ -11,24 +11,24 @@ public class HeroList {
     private static void setHeroes() {
         list = new ArrayList<>();
 
+        list.add(new Warrior("Hermione", 5, 500, 400, 250, 600, 2500, 9));
+        list.add(new Warrior("Ron", 4, 600, 800, 600, 400, 2204, 8));
+        list.add(new Warrior("Harry Potter", 6, 750, 850, 400, 600, 3000, 6));
         list.add(new Warrior("Neville", 3, 250, 700, 400, 400, 1354, 7));
-        list.add(new Warrior("Ron", 4, 600, 800, 600, 400, 1204, 8));
-        list.add(new Warrior("Harry Potter", 7, 750, 850, 400, 600, 2800, 6));
-        list.add(new Warrior("Hermione", 8, 300, 400, 250, 600, 4000, 9));
-        list.add(new Warrior("Luna", 5, 300, 600, 400, 350, 1111, 5));
+        list.add(new Warrior("Luna", 2, 300, 600, 400, 350, 900, 5));
         list.add(new Warrior("Albus Dumbledore", 10, 900, 1100, 600, 900, 3821, 10));
 
-        list.add(new Sorcerer("Gilderoy Lockhart", 2, 600, 200, 444, 250, 2500, 5));
+        list.add(new Sorcerer("Gilderoy Lockhart", 2, 600, 200, 444, 250, 750, 5));
         list.add(new Sorcerer("Remus Lupin", 4, 800, 350, 500, 300, 1900, 6));
         list.add(new Sorcerer("Severus Snape", 6, 820, 550, 700, 550, 2800, 6));
         list.add(new Sorcerer("Sybill Trelawney", 5, 700, 280, 666, 460, 3000, 7));
         list.add(new Sorcerer("Nicolas Flamel", 8, 1200, 200, 1500, 650, 2400, 10));
 
-        list.add(new Paladin("Mad-Eye", 5, 500, 700, 850, 250, 2500, 5));
+        list.add(new Paladin("Mad-Eye", 6, 500, 700, 850, 250, 1000, 5));
         list.add(new Paladin("Filius Flitwick", 4, 430, 650, 750, 350, 1203, 7));
-        list.add(new Paladin("Horace Slughorn", 4, 300, 800, 640, 200, 3023, 6));
-        list.add(new Paladin("Quirinus Quirrell", 2, 350, 470, 120, 250, 1111, 5));
-        list.add(new Paladin("Professor McGonagall", 8, 620, 900, 900, 400, 900, 8));
+        list.add(new Paladin("Horace Slughorn", 4, 300, 800, 640, 200, 1023, 6));
+        list.add(new Paladin("Quirinus Quirrell", 3, 350, 470, 120, 250, 1111, 5));
+        list.add(new Paladin("Professor McGonagall", 7, 620, 900, 900, 400, 1900, 8));
     }
 
     public static ArrayList<Hero> getList() {

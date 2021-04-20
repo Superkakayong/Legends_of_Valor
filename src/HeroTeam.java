@@ -15,7 +15,7 @@ public class HeroTeam {
     }
 
     public void addMembers(Hero h) {
-        if (team.size() == 3) { return; } // The MAX team size is 3
+        if (team.size() == 3) { return; } // The MAXIMUM team size is 3
         team.add(h);
     }
 }

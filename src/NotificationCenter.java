@@ -116,6 +116,9 @@ public final class NotificationCenter {
         System.out.println("Please keep in mind of the following operations: ");
     }
 
+    /*
+        Display all the operations for the heroes.
+     */
     public static void showOperations() {
         System.out.println(Colors.YELLOW + "---------------------------------------------" + Colors.RESET);
 
@@ -160,6 +163,9 @@ public final class NotificationCenter {
         System.out.println(Colors.YELLOW + "---------------------------------------------" + Colors.RESET);
     }
 
+    /*
+        Information about spawning monsters after every 8 rounds.
+     */
     public static void spawnNewMonsters() {
         System.out.println(Colors.RED + "Eight rounds passed! Three new monsters have spawned!" + Colors.RESET);
     }
@@ -305,8 +311,12 @@ public final class NotificationCenter {
         }
     }
 
+    /*
+        Messages when monster squad starts to act.
+     */
     public static void attention() {
         System.out.println(Colors.RED_BG + Colors.BLACK + " Attention! Monster Squad Revenges! " + Colors.RESET);
+        System.out.println(sword);
         System.out.println();
     }
 
@@ -418,7 +428,7 @@ public final class NotificationCenter {
         }
     }
 
-    // About the damage to the roles (i.e. heroes/monsters).
+    // Info about the damage to the roles (i.e. heroes/monsters).
     public static void inflict(int index, Role r1, double damage, Role r2) {
         String marker1, marker2;
 
@@ -590,6 +600,9 @@ public final class NotificationCenter {
         }
     }
 
+    /*
+        Messages about assigning a opponent to the hero/monster.
+     */
     public static void chooseAnOpponent(int index) {
         switch (index) {
             case 1:
@@ -736,6 +749,9 @@ public final class NotificationCenter {
         }
     }
 
+    /*
+        Information about teleport actions.
+     */
     public static void teleport(int index) {
         switch (index) {
             case 1:
