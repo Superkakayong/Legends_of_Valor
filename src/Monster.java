@@ -84,7 +84,7 @@ public class Monster extends Role implements Fight{
     public void processHeroStatus(Hero hero) {
         String info = "Hero " + hero.name;
 
-        if (!hero.hasFainted()) {
+        if (!hero.hasDead()) {
             // The hero is still alive
             NotificationCenter.aliveOrDead(1, info, hero.hp);
         } else {
