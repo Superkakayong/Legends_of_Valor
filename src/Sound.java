@@ -26,7 +26,7 @@ public class Sound implements Runnable{
             // Let the music loop!!! So long as you are alive, don't stop the music!!! :)
             try {
                 // load the file
-                file = new File("Sound.wav");
+                file = new File("music/Je Te Veux.wav");
                 // get the audio input stream
                 audio = AudioSystem.getAudioInputStream(file);
                 // get the format of the audio
