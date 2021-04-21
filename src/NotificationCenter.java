@@ -42,7 +42,7 @@ public final class NotificationCenter {
             "  ||[^]||                                            ___________________/\n" +
             "   \\===/___________________--------------------------\n" + Colors.RESET;
 
-    public static String sword = Colors.RED + "◎■■■■】〓〓〓〓〓〓〓〓〓〓〓〓＞\n" + Colors.RESET;
+    public static String sword = Colors.RED + "◎■■■■】〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓＞\n" + Colors.RESET;
 
     public static String win = Colors.GREEN + "    ▕▔▔╲\n" +
             "     ▏ ▕\n" + "     ▏ ▕▂▂▂▂▂\n" + "▂▂▂▂╱  ▕▂▂▂▂▂▏\n" + "▉▉▉    ▕▂▂▂▂▂▏\n" + "▉▉▉    ▕▂▂▂▂▂▏\n" +
@@ -316,6 +316,7 @@ public final class NotificationCenter {
      */
     public static void attention() {
         System.out.println(Colors.RED_BG + Colors.BLACK + " Attention! Monster Squad Revenges! " + Colors.RESET);
+        System.out.println();
         System.out.println(sword);
         System.out.println();
     }

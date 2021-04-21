@@ -1,8 +1,8 @@
 /**
  * This class serves as a starter (initiator) of all the threads that will be involved in this class.
  */
-public class multiThreadsStarter {
-    public multiThreadsStarter() {}
+public class MultiThreadsStarter {
+    public MultiThreadsStarter() {}
 
     /*
         Initialize and start all the threads.

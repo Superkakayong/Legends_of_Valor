@@ -3,7 +3,5 @@
  * Only this class has the main() method, and it is very concise!
  */
 public class GameEntrance {
-
-    public static void main(String[] args) { new multiThreadsStarter().initializeThreads(); }
-
+    public static void main(String[] args) { new MultiThreadsStarter().initializeThreads(); }
 }
