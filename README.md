@@ -4,7 +4,7 @@
 
 > # Background
 >
-> This is a terminal-based and **Harry Potter Style** RPG game focusing on **Java**, **object-oriented design**, **design patterns** and **teamwork**. There are **46** classes in total, which renders the whole project of high **scalability** and **extendability!**
+> This is a terminal-based and **Harry Potter Style** RPG game focusing on **Java**, **object-oriented design**, **design patterns** and **teamwork**. There are **46** classes in total, which renders the whole project of high **scalability** and **extendability!** 
 >
 > Project Developers: **Dayong Wu** and **Xiongxin Zeng**.
 
