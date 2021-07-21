@@ -1,6 +1,6 @@
 /**
  * This class manages the properties of an armor.
- * It also extends from the class Prop since an armor is a prop.
+ * It also extends from the class Prop since an armor is a prop. 
  */
 public final class Armor extends Prop{
     private int damageReduction;
