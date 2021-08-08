@@ -1,5 +1,5 @@
 /**
- * This class represents a bush cell, which belongs to a specific type of map cells.
+ * This class represents a bush cell, which belongs to a specific type of map cells. 
  * Therefore, it inherits from the Cell class.
  */
 public class BushCell extends Cell{
