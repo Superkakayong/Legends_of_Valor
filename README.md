@@ -16,7 +16,7 @@
 
 <img src="https://github.com/Superkakayong/Trivia/blob/master/Project_Images/Legends/Map.jpeg" alt="image-20210210200440573" style="zoom:90%; float: left" />
 
-## General workflow of the game
+## General workflow of the game 
 
 1. After running the project, the **sound** will automatically play.
 2. Ask the players if they want to start or quit the game.
