@@ -10,7 +10,7 @@
 
 ---
 
-## Examples of Gaming Experience
+## Examples of Gaming Experience 
 
 <img src="https://github.com/Superkakayong/Trivia/blob/master/Project_Images/Legends/Legends.jpeg" alt="image-20210210200440573" style="zoom:90%; float: left" />
 
