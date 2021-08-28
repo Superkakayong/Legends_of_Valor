@@ -1,5 +1,5 @@
 /**
- * This class represents a map cell of the map.
+ * This class represents a map cell of the map. 
  */
 public class Cell {
     protected String leftMarker;
