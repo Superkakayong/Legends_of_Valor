@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Scanner; 
 
 /**
  * This class manages all the common properties of all types of heroes.
