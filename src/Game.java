@@ -1,5 +1,5 @@
 /**
- * This class is the top super class for all types of games.
+ * This class is the top super class for all types of games. 
  */
 public abstract class Game {
     public Game() {}
