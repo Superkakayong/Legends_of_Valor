@@ -1,5 +1,5 @@
 /**
- * This class stores all the colors that will be used in this project.
+ * This class stores all the colors that will be used in this project. 
  */
 public class Colors {
     // For resetting the colors
