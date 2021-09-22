@@ -1,5 +1,5 @@
 /**
- * This class represents a role in the RPG games.
+ * This class represents a role in the RPG games. 
  * In this game, both Hero and Monster have inherited from this class.
  */
 public class Role {
