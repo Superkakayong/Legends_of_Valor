@@ -1,7 +1,7 @@
 /**
  * This class manages all the common properties of all types of monsters.
  * It inherits from the Role class, and implements the Fight interface.
- * It is the super class for all specific monster classes.
+ * It is the super class for all specific monster classes. 
  */
 public class Monster extends Role implements Fight{
     protected double damage;
