@@ -1,5 +1,5 @@
 /**
- * This class is the super class of all RPG games.
+ * This class is the super class of all RPG games. 
  * It also inherits from the Game class, which is the top super class of all games.
  */
 public abstract class RPGGame extends Game {
